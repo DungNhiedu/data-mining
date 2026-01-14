@@ -1,0 +1,6 @@
+,Tree-Entropy,Tree-Gini,Naive Bayes
+Accuracy,0.5507,0.54,0.828
+Precision,0.2222,0.2219,0.0
+Recall,0.6614,0.685,0.0
+F1-Score,0.3327,0.3353,0.0
+ROC-AUC,0.6388,0.6392,0.6548
