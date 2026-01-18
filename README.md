@@ -143,8 +143,6 @@ python src/main.py
 | Decision Tree (Entropy) | 0.85 | 0.83 | 0.87 | 0.85 | 0.91 |
 | Decision Tree (Gini) | 0.85 | 0.83 | 0.87 | 0.85 | 0.91 |
 | Naive Bayes (Gaussian) | 0.78 | 0.76 | 0.81 | 0.78 | 0.85 |
-| Logistic Regression | 0.82 | 0.80 | 0.84 | 0.82 | 0.89 |
-| Random Forest | 0.87 | 0.85 | 0.89 | 0.87 | 0.93 |
 
 ### Các biến quan trọng
 
