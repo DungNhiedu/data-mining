@@ -53,7 +53,10 @@ def load_real_data(data_dir='data'):
     --------
     pd.DataFrame
     """
-    from data_loader import create_combined_dataset
+    try:
+        from .data_loader import create_combined_dataset
+    except ImportError:
+        from data_loader import create_combined_dataset
     return create_combined_dataset(data_dir)
 
 
@@ -328,4 +331,4 @@ if __name__ == "__main__":
     X_nb = pre_nb.fit_transform(X_train)
     print(f"Transformed shape: {X_nb.shape}")
     
-    print("\n✓ All preprocessing tests passed!")
+    print("\n[OK] All preprocessing tests passed!")

@@ -12,25 +12,43 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Thêm thư mục src vào path
+# Them thu muc src vao path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from data_loader import (
-    create_combined_dataset, 
-    load_marriage_data, 
-    load_tfr_data,
-    get_summary_by_region,
-    get_summary_by_year
-)
-from preprocessing import split_data, FEATURES_REAL, TARGET_REAL
-from decision_tree_model import DecisionTreeModel, train_and_compare_trees, plot_roc_comparison
-from naive_bayes_model import NaiveBayesModel, compare_nb_models
-from visualization import (
-    plot_target_distribution, 
-    plot_feature_distributions,
-    plot_metrics_comparison,
-    save_all_plots
-)
+try:
+    from .data_loader import (
+        create_combined_dataset, 
+        load_marriage_data, 
+        load_tfr_data,
+        get_summary_by_region,
+        get_summary_by_year
+    )
+    from .preprocessing import split_data, FEATURES_REAL, TARGET_REAL
+    from .decision_tree_model import DecisionTreeModel, train_and_compare_trees, plot_roc_comparison
+    from .naive_bayes_model import NaiveBayesModel, compare_nb_models
+    from .visualization import (
+        plot_target_distribution, 
+        plot_feature_distributions,
+        plot_metrics_comparison,
+        save_all_plots
+    )
+except ImportError:
+    from data_loader import (
+        create_combined_dataset, 
+        load_marriage_data, 
+        load_tfr_data,
+        get_summary_by_region,
+        get_summary_by_year
+    )
+    from preprocessing import split_data, FEATURES_REAL, TARGET_REAL
+    from decision_tree_model import DecisionTreeModel, train_and_compare_trees, plot_roc_comparison
+    from naive_bayes_model import NaiveBayesModel, compare_nb_models
+    from visualization import (
+        plot_target_distribution, 
+        plot_feature_distributions,
+        plot_metrics_comparison,
+        save_all_plots
+    )
 
 
 def print_data_summary(df):
@@ -67,7 +85,7 @@ def main():
     # Lưu dữ liệu đã xử lý
     os.makedirs("data", exist_ok=True)
     df.to_csv("data/combined_data.csv", index=False, encoding="utf-8-sig")
-    print("\n✓ Đã lưu dữ liệu vào: data/combined_data.csv")
+    print("\n[OK] Da luu du lieu vao: data/combined_data.csv")
     
     # In tổng hợp theo vùng và năm
     print("\n--- Tổng hợp theo vùng miền ---")
@@ -136,7 +154,7 @@ def main():
     nb_metrics = nb_results[best_nb_type]['metrics']
     nb_threshold = nb_results[best_nb_type].get('best_threshold', 0.5)
     
-    print(f"\n✓ Best Naive Bayes model: {best_nb_type} (threshold={nb_threshold:.2f})")
+    print(f"\n[OK] Best Naive Bayes model: {best_nb_type} (threshold={nb_threshold:.2f})")
     
     # =========================================================================
     # BƯỚC 5: DỰ ĐOÁN CHO NĂM TIẾP THEO
@@ -209,7 +227,7 @@ def main():
     
     # Tìm model tốt nhất
     best_model = metrics_comparison.loc["Accuracy"].idxmax()
-    print(f"\n✓ Best model (by Accuracy): {best_model}")
+    print(f"\n[OK] Best model (by Accuracy): {best_model}")
     
     # =========================================================================
     # BƯỚC 7: LƯU KẾT QUẢ
@@ -230,8 +248,8 @@ def main():
     metrics_comparison.to_csv("outputs/model_comparison.csv")
     df_predictions.to_csv("outputs/predictions_2025.csv", index=False, encoding="utf-8-sig")
     
-    print("✓ Đã lưu models vào thư mục: models/")
-    print("✓ Đã lưu kết quả vào thư mục: outputs/")
+    print("[OK] Da luu models vao thu muc: models/")
+    print("[OK] Da luu ket qua vao thu muc: outputs/")
     
     # =========================================================================
     # KẾT LUẬN

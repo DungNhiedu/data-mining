@@ -22,7 +22,10 @@ from sklearn.model_selection import cross_val_score
 import joblib
 import os
 
-from preprocessing import get_nb_preprocessor, FEATURES_REAL, TARGET_REAL
+try:
+    from .preprocessing import get_nb_preprocessor, FEATURES_REAL, TARGET_REAL
+except ImportError:
+    from preprocessing import get_nb_preprocessor, FEATURES_REAL, TARGET_REAL
 
 
 class NaiveBayesModel:
@@ -253,7 +256,7 @@ class NaiveBayesModel:
             'model_type': self.model_type,
             'alpha': self.alpha
         }, filepath)
-        print(f"✓ Đã lưu mô hình vào: {filepath}")
+        print(f"[OK] Da luu mo hinh vao: {filepath}")
     
     @classmethod
     def load_model(cls, filepath):
@@ -321,10 +324,14 @@ def compare_nb_models(X_train, X_test, y_train, y_test, features=None):
 
 
 if __name__ == "__main__":
-    from data_loader import create_combined_dataset
-    from preprocessing import split_data, FEATURES_REAL
+    try:
+        from .data_loader import create_combined_dataset
+        from .preprocessing import split_data, FEATURES_REAL
+    except ImportError:
+        from data_loader import create_combined_dataset
+        from preprocessing import split_data, FEATURES_REAL
     
-    # Load dữ liệu thực
+    # Load du lieu thuc
     print("Loading real data...")
     df = create_combined_dataset()
     print(f"Dataset shape: {df.shape}")
@@ -343,7 +350,7 @@ if __name__ == "__main__":
     
     # Chọn và lưu model tốt nhất (theo F1)
     best_model_name = max(results.keys(), key=lambda k: results[k]['metrics']['f1_score'])
-    print(f"\n✓ Best model: {best_model_name}")
+    print(f"\n[OK] Best model: {best_model_name}")
     
     os.makedirs("models", exist_ok=True)
     results[best_model_name]["model"].save_model("models/naive_bayes_best.pkl")

@@ -1,5 +1,6 @@
 # Python
 __pycache__/
+*.pyc
 *.py[cod]
 *$py.class
 *.so
@@ -45,3 +46,7 @@ Thumbs.db
 # Local config
 .env
 .env.local
+
+# Large data files (exceeds GitHub 100MB limit)
+data/ipumsi_data.csv
+data/ipums_processed.csv

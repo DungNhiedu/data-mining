@@ -1,0 +1,23 @@
+Feature,Importance
+age,0.5543157235936733
+household_size,0.23169118765514887
+urban_rural_Nông thôn,0.04308663033565872
+sex_Nữ,0.04277960403186299
+education_level_ĐH/CĐ+,0.03134045060039449
+sex_Nam,0.030751517329045477
+home_ownership,0.027962909975099585
+living_area,0.019783482253614818
+urban_rural_Đô thị,0.009199316675493079
+education_level_≤THPT,0.004358462756348491
+household_size_group_1-2 người,0.0016662044287042593
+age_group_18-24,0.0015716885832144398
+age_group_25-29,0.0004454706809721204
+household_size_group_3-4 người,0.000443041465778677
+living_area_level_Khá,0.00023471243103381456
+living_area_level_Nhỏ,0.00015058821188724416
+living_area_level_Trung bình,0.00013618130526573476
+household_size_group_5-6 người,7.727803143097128e-05
+age_group_30-35,5.549655372951803e-06
+region_Bắc,0.0
+living_area_level_Rộng,0.0
+household_size_group_>6 người,0.0

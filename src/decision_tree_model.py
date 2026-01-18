@@ -21,7 +21,10 @@ from sklearn.model_selection import cross_val_score
 import joblib
 import os
 
-from preprocessing import get_tree_preprocessor, FEATURES_REAL, TARGET_REAL
+try:
+    from .preprocessing import get_tree_preprocessor, FEATURES_REAL, TARGET_REAL
+except ImportError:
+    from preprocessing import get_tree_preprocessor, FEATURES_REAL, TARGET_REAL
 
 
 class DecisionTreeModel:
@@ -246,15 +249,15 @@ class DecisionTreeModel:
     
     def save_model(self, filepath):
         """
-        Lưu mô hình
+        Luu mo hinh
         """
         joblib.dump(self.pipeline, filepath)
-        print(f"✓ Đã lưu mô hình vào: {filepath}")
+        print(f"[OK] Da luu mo hinh vao: {filepath}")
     
     @classmethod
     def load_model(cls, filepath):
         """
-        Tải mô hình đã lưu
+        Tai mo hinh da luu
         """
         pipeline = joblib.load(filepath)
         instance = cls.__new__(cls)
@@ -329,10 +332,14 @@ def plot_roc_comparison(results, X_test, y_test):
 
 
 if __name__ == "__main__":
-    from data_loader import create_combined_dataset
-    from preprocessing import split_data, FEATURES_REAL
+    try:
+        from .data_loader import create_combined_dataset
+        from .preprocessing import split_data, FEATURES_REAL
+    except ImportError:
+        from data_loader import create_combined_dataset
+        from preprocessing import split_data, FEATURES_REAL
     
-    # Load dữ liệu thực
+    # Load du lieu thuc
     print("Loading real data...")
     df = create_combined_dataset()
     print(f"Dataset shape: {df.shape}")

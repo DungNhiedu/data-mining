@@ -137,5 +137,5 @@ if __name__ == "__main__":
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "marriage_data.csv")
     df.to_csv(output_path, index=False, encoding="utf-8-sig")
-    print(f"\n✓ Đã lưu dữ liệu vào: {output_path}")
-    print(f"✓ Kích thước: {df.shape}")
+    print(f"\n[OK] Da luu du lieu vao: {output_path}")
+    print(f"[OK] Kich thuoc: {df.shape}")

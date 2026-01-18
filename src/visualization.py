@@ -272,7 +272,7 @@ def save_all_plots(df, output_dir="outputs/figures"):
     for filename, fig in plots.items():
         filepath = os.path.join(output_dir, filename)
         fig.savefig(filepath, dpi=150, bbox_inches='tight')
-        print(f"✓ Đã lưu: {filepath}")
+        print(f"[OK] Da luu: {filepath}")
         plt.close(fig)
 
 
@@ -284,4 +284,4 @@ if __name__ == "__main__":
     
     # Lưu tất cả biểu đồ
     save_all_plots(df)
-    print("\n✓ Hoàn thành tạo biểu đồ!")
+    print("\n[OK] Hoan thanh tao bieu do!")
