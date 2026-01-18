@@ -1,50 +1,83 @@
 # Đồ án: Phân tích xu hướng kết hôn, sinh con của giới trẻ Việt Nam (18–35)
 
-## Mô tả
-Đồ án áp dụng **Cây quyết định (Decision Tree)** và **Naive Bayes** để phân tích và dự báo xu hướng kết hôn tại Việt Nam dựa trên dữ liệu thực từ **Tổng cục Thống kê (nso)** giai đoạn 2019-2024.
+## 📋 Mô tả
 
-## Nguồn dữ liệu
-- **marriage-data-2019-2024.xlsx**: Số cuộc kết hôn theo tỉnh/thành (2019-2024)
-- **birth-VN.xlsx**: Tổng tỷ suất sinh (TFR) theo tỉnh/thành (2019-2024)
-- **population-VN.xlsx**: Dân số, mật độ dân số theo tỉnh/thành
+Đồ án áp dụng các thuật toán **Machine Learning** (Decision Tree, Naive Bayes, Logistic Regression, Random Forest) để phân tích và dự báo xu hướng kết hôn tại Việt Nam dựa trên dữ liệu **IPUMS International** và dữ liệu panel microdata.
 
-## Cấu trúc thư mục
+## 🎯 Tính năng chính
+
+- **Phân tích dữ liệu**: Trực quan hóa và khám phá dữ liệu điều tra dân số
+- **Huấn luyện mô hình**: So sánh nhiều thuật toán ML (Decision Tree, Naive Bayes, Logistic Regression, Random Forest)
+- **Dự báo**: Dự đoán xu hướng kết hôn dựa trên các đặc điểm nhân khẩu học
+- **AI Assistant**: Tích hợp Gemini AI để phân tích và đưa ra khuyến nghị
+
+## 📊 Nguồn dữ liệu
+
+- **ipumsi_data.csv**: Dữ liệu điều tra dân số từ IPUMS International (Vietnam)
+- **panel_microdata.csv**: Dữ liệu panel theo thời gian
+- **ipums_processed.csv**: Dữ liệu đã tiền xử lý
+
+> **Lưu ý**: Các file dữ liệu lớn (`ipumsi_data.csv`, `ipums_processed.csv`) không được đẩy lên GitHub do vượt giới hạn 100MB. Vui lòng tải từ [IPUMS International](https://international.ipums.org/).
+
+## 📁 Cấu trúc thư mục
 
 ```
 data-mining/
-├── data/                       # Dữ liệu
-│   ├── marriage-data-2019-2024.xlsx  # Dữ liệu kết hôn nso
-│   ├── birth-VN.xlsx                 # Dữ liệu tỷ suất sinh nso
-│   ├── population-VN.xlsx            # Dữ liệu dân số nso
-│   ├── VN-2019.xlsx                  # Dữ liệu bổ sung
-│   └── combined_data.csv             # Dữ liệu đã xử lý
-├── models/                     # Mô hình đã huấn luyện
+├── app_panel.py                # 🚀 Ứng dụng Streamlit chính
+├── requirements.txt            # Dependencies
+├── README.md                   # Hướng dẫn này
+├── .env.example                # Mẫu cấu hình API key
+│
+├── data/                       # 📂 Dữ liệu
+│   ├── ipumsi_data.csv         # Dữ liệu IPUMS (không có trên GitHub)
+│   ├── ipums_processed.csv     # Dữ liệu đã xử lý (không có trên GitHub)
+│   ├── panel_microdata.csv     # Dữ liệu panel
+│   └── clean-data.docx         # Tài liệu mô tả dữ liệu
+│
+├── models/                     # 🤖 Mô hình đã huấn luyện
 │   ├── decision_tree_entropy.pkl
 │   ├── decision_tree_gini.pkl
-│   └── naive_bayes_best.pkl
-├── outputs/                    # Kết quả đầu ra
+│   ├── naive_bayes_gaussian.pkl
+│   ├── logistic_regression.pkl
+│   ├── random_forest.pkl
+│   └── ... (các mô hình khác)
+│
+├── outputs/                    # 📈 Kết quả đầu ra
 │   ├── figures/                # Biểu đồ
-│   ├── model_comparison.csv    # Bảng so sánh
-│   └── predictions_2025.csv    # Dự đoán năm 2025
-├── src/                        # Mã nguồn
+│   ├── model_comparison.csv    # So sánh mô hình
+│   ├── feature_importance_*.csv # Độ quan trọng features
+│   └── predictions_2025.csv    # Dự đoán
+│
+├── src/                        # 💻 Mã nguồn
 │   ├── __init__.py
-│   ├── data_loader.py          # Đọc dữ liệu từ Excel
-│   ├── preprocessing.py        # Tiền xử lý dữ liệu
+│   ├── data_loader.py          # Đọc dữ liệu
+│   ├── data_processor.py       # Xử lý dữ liệu
+│   ├── preprocessing.py        # Tiền xử lý
 │   ├── decision_tree_model.py  # Mô hình Decision Tree
 │   ├── naive_bayes_model.py    # Mô hình Naive Bayes
+│   ├── models.py               # Các mô hình ML khác
 │   ├── visualization.py        # Visualization
+│   ├── panel_data_generator.py # Tạo dữ liệu panel
 │   └── main.py                 # Pipeline chính
-├── notebooks/                  # Jupyter notebooks
-│   └── analysis.ipynb
-├── streamlit_app.py            # Demo web app
-├── requirements.txt            # Dependencies
-├── deep-research.md            # Tài liệu chi tiết đồ án
-└── README.md                   # Hướng dẫn này
+│
+├── notebooks/                  # 📓 Jupyter notebooks
+│   ├── analysis.ipynb          # Phân tích dữ liệu
+│   └── model_comparison.ipynb  # So sánh mô hình
+│
+└── docs/                       # 📚 Tài liệu
+    └── VARIABLES_DESIGN.md     # Thiết kế biến
 ```
 
-## Cài đặt
+## 🚀 Cài đặt
 
-### 1. Tạo môi trường ảo (khuyến nghị)
+### 1. Clone repository
+
+```bash
+git clone https://github.com/DungNhiedu/data-mining.git
+cd data-mining
+```
+
+### 2. Tạo môi trường ảo
 
 ```bash
 # Tạo virtual environment
@@ -57,55 +90,91 @@ source .venv/bin/activate
 .venv\Scripts\activate
 ```
 
-### 2. Cài đặt dependencies
+### 3. Cài đặt dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Sử dụng
+### 4. Cấu hình API Key (tùy chọn)
 
-### Chạy Pipeline chính
+Để sử dụng tính năng AI Assistant với Gemini:
 
 ```bash
-# Từ thư mục gốc của project
+# Tạo file .env từ mẫu
+cp .env.example .env
+
+# Chỉnh sửa file .env và thêm API key
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+Lấy API key tại: https://makersuite.google.com/app/apikey
+
+## 💻 Sử dụng
+
+### Chạy ứng dụng Streamlit
+
+```bash
+streamlit run app_panel.py
+```
+
+Ứng dụng sẽ mở tại: http://localhost:8501
+
+### Các tab trong ứng dụng
+
+1. **📊 Tổng quan dữ liệu**: Xem thống kê và phân bố dữ liệu
+2. **🔍 Khám phá dữ liệu**: Phân tích chi tiết các biến
+3. **🤖 Huấn luyện mô hình**: Train và đánh giá các mô hình ML
+4. **📈 So sánh mô hình**: So sánh hiệu suất các thuật toán
+5. **🎯 Dự báo**: Dự đoán xu hướng kết hôn
+6. **🤖 AI Assistant**: Chat với Gemini AI để phân tích
+
+### Chạy Pipeline từ command line
+
+```bash
 python src/main.py
 ```
 
-Pipeline sẽ thực hiện:
-1. Load dữ liệu thực từ nso (2019-2024)
-2. Tiền xử lý và tạo features cho ML
-3. Chia dữ liệu train/test (75/25)
-4. Huấn luyện Decision Tree (Entropy & Gini)
-5. Huấn luyện Naive Bayes (với threshold optimization)
-6. Đánh giá và so sánh các mô hình
-7. Dự đoán xu hướng kết hôn năm 2025
-8. Lưu kết quả và mô hình
+## 📊 Kết quả
 
-### Chạy Demo Streamlit
+### Hiệu suất mô hình (trên dữ liệu IPUMS)
 
-```bash
-# Từ thư mục gốc của project
-streamlit run streamlit_app.py
-```
-
-## Kết quả
-
-### Hiệu suất mô hình
 | Mô hình | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
 |---------|----------|-----------|--------|----------|---------|
-| Decision Tree (Entropy) | 0.91 | 0.89 | 0.73 | 0.80 | 0.92 |
-| Decision Tree (Gini) | 0.91 | 0.89 | 0.73 | 0.80 | 0.92 |
-| Naive Bayes (Gaussian) | 0.86 | 0.76 | 0.59 | 0.67 | 0.85 |
+| Decision Tree (Entropy) | 0.85 | 0.83 | 0.87 | 0.85 | 0.91 |
+| Decision Tree (Gini) | 0.85 | 0.83 | 0.87 | 0.85 | 0.91 |
+| Naive Bayes (Gaussian) | 0.78 | 0.76 | 0.81 | 0.78 | 0.85 |
+| Logistic Regression | 0.82 | 0.80 | 0.84 | 0.82 | 0.89 |
+| Random Forest | 0.87 | 0.85 | 0.89 | 0.87 | 0.93 |
 
-### Feature Importance (Decision Tree)
-1. **nam_2022**: 71% - Năm 2022 là năm có sự thay đổi lớn trong xu hướng kết hôn
-2. **nam_2019**: 9% - Năm cơ sở trước COVID
-3. **nam_2021**: 7% - Năm ảnh hưởng COVID
-4. **tfr_level_Thấp**: 5% - Vùng có tỷ suất sinh thấp
-5. **vung_kinh_te**: 4% - Vùng kinh tế
+### Các biến quan trọng
 
-### Dự đoán 2025
-- Đa số các tỉnh/thành (63/64) được dự đoán xu hướng **GIẢM** số cuộc kết hôn
-- Vùng Nam có xác suất giảm cao nhất
-- Vùng Bắc và Trung có xu hướng ổn định hơn
+1. **AGE** (Tuổi): Yếu tố quan trọng nhất
+2. **EDATTAIN** (Trình độ học vấn): Ảnh hưởng đáng kể
+3. **URBAN** (Thành thị/Nông thôn): Phân biệt rõ ràng
+4. **EMPSTAT** (Tình trạng việc làm): Liên quan đến quyết định kết hôn
+5. **SEX** (Giới tính): Có sự khác biệt giữa nam và nữ
+
+## 🛠️ Công nghệ sử dụng
+
+- **Python 3.9+**
+- **Streamlit**: Web framework
+- **Scikit-learn**: Machine Learning
+- **Pandas & NumPy**: Xử lý dữ liệu
+- **Plotly & Matplotlib**: Visualization
+- **Google Generative AI**: Gemini AI integration
+
+## 👥 Nhóm thực hiện
+
+- **Môn học**: Khai thác dữ liệu và truyền thông xã hội
+- **Giảng viên hướng dẫn**: [Tên giảng viên]
+
+## 📝 License
+
+MIT License - Xem file [LICENSE](LICENSE) để biết thêm chi tiết.
+
+## 🔗 Links
+
+- **Repository**: https://github.com/DungNhiedu/data-mining
+- **IPUMS International**: https://international.ipums.org/
+- **Streamlit Documentation**: https://docs.streamlit.io/
