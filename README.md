@@ -2,12 +2,12 @@
 
 ## Mô tả
 
-Đồ án áp dụng các thuật toán **Machine Learning** (Decision Tree, Naive Bayes, Logistic Regression, Random Forest) để phân tích và dự báo xu hướng kết hôn tại Việt Nam dựa trên dữ liệu **IPUMS International** và dữ liệu panel microdata.
+Đồ án áp dụng các thuật toán **Machine Learning** (Decision Tree, Naive Bayes) để phân tích và dự báo xu hướng kết hôn tại Việt Nam dựa trên dữ liệu **IPUMS International** và dữ liệu panel microdata.
 
 ## Tính năng chính
 
 - **Phân tích dữ liệu**: Trực quan hóa và khám phá dữ liệu điều tra dân số
-- **Huấn luyện mô hình**: So sánh nhiều thuật toán ML (Decision Tree, Naive Bayes, Logistic Regression, Random Forest)
+- **Huấn luyện mô hình**: So sánh nhiều thuật toán ML (Decision Tree, Naive Bayes)
 - **Dự báo**: Dự đoán xu hướng kết hôn dựa trên các đặc điểm nhân khẩu học
 - **AI Assistant**: Tích hợp Gemini AI để phân tích và đưa ra khuyến nghị
 
@@ -17,7 +17,7 @@
 - **panel_microdata.csv**: Dữ liệu panel theo thời gian
 - **ipums_processed.csv**: Dữ liệu đã tiền xử lý
 
-> **Lưu ý**: Các file dữ liệu lớn (`ipumsi_data.csv`, `ipums_processed.csv`) không được đẩy lên GitHub do vượt giới hạn 100MB. Vui lòng tải từ [IPUMS International](https://international.ipums.org/).
+> **Lưu ý**: Các file dữ liệu lớn, hãy tải từ [IPUMS International](https://international.ipums.org/).
 
 ## Cấu trúc thư mục
 ```
