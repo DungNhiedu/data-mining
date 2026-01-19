@@ -9,8 +9,6 @@ import numpy as np
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
     confusion_matrix, classification_report, roc_auc_score, roc_curve
@@ -41,18 +39,7 @@ class MarriagePredictionModels:
                 min_samples_leaf=50,
                 random_state=42
             ),
-            'Naive Bayes': GaussianNB(),
-            'Random Forest': RandomForestClassifier(
-                n_estimators=100,
-                max_depth=10,
-                min_samples_split=100,
-                random_state=42,
-                n_jobs=-1
-            ),
-            'Logistic Regression': LogisticRegression(
-                max_iter=1000,
-                random_state=42
-            )
+            'Naive Bayes': GaussianNB()
         }
         self.trained_models = {}
         self.results = {}
