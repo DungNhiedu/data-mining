@@ -1,9 +1,13 @@
 # =============================================================================
-# ĐỒ ÁN: Áp dụng Cây quyết định và Naive Bayes phân tích xu hướng kết hôn, 
-#        sinh con của giới trẻ Việt Nam (18–35)
+# ĐỒ ÁN: Dự báo Tình trạng Hôn nhân của Giới trẻ Việt Nam (18–35)
 # =============================================================================
 # File: decision_tree_model.py
 # Mô tả: Mô hình Cây quyết định (Decision Tree) với Entropy và Gini
+#
+# BIẾN MỤC TIÊU (Target Variable):
+#   - Y_married (từ MARST): Tình trạng hôn nhân
+#     + 0 = Chưa kết hôn (Single/never married)
+#     + 1 = Đã kết hôn (Married/in union)
 # =============================================================================
 
 import numpy as np
@@ -190,7 +194,7 @@ class DecisionTreeModel:
         Vẽ cây quyết định
         """
         if class_names is None:
-            class_names = ["Giảm", "Tăng/Giữ nguyên"]
+            class_names = ["Chưa kết hôn", "Đã kết hôn"]
             
         feature_names = self.get_feature_names()
         tree = self.pipeline.named_steps["model"]
@@ -228,7 +232,7 @@ class DecisionTreeModel:
         Vẽ ma trận nhầm lẫn
         """
         if class_names is None:
-            class_names = ["Giảm", "Tăng/Giữ nguyên"]
+            class_names = ["Chưa kết hôn", "Đã kết hôn"]
             
         cm = confusion_matrix(y_test, y_pred)
         

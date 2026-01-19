@@ -2,8 +2,13 @@
 # HUẤN LUYỆN MÔ HÌNH DỰ BÁO KẾT HÔN - IPUMS DATA
 # =============================================================================
 # File: train_marriage_model.py
-# Mô tả: Huấn luyện các mô hình ML dự báo xác suất kết hôn
+# Mô tả: Huấn luyện các mô hình ML dự báo TÌNH TRẠNG HÔN NHÂN
 #        sử dụng dữ liệu IPUMS International Vietnam Census
+#
+# BIẾN MỤC TIÊU (Target Variable):
+#   - Y_married (từ MARST): Tình trạng hôn nhân
+#     + 0 = Chưa kết hôn (Single/never married)
+#     + 1 = Đã kết hôn (Married/in union)
 # =============================================================================
 
 import pandas as pd

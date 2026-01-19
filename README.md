@@ -1,15 +1,34 @@
-# Đồ án: Phân tích xu hướng kết hôn, sinh con của giới trẻ Việt Nam
+# Đồ án: Phân tích xu hướng kết hôn của giới trẻ Việt Nam
 
 ## Mô tả
 
-Đồ án áp dụng các thuật toán **Machine Learning** (Decision Tree, Naive Bayes) để phân tích và dự báo xu hướng kết hôn tại Việt Nam dựa trên dữ liệu **IPUMS International** và dữ liệu panel microdata.
+Đồ án áp dụng các thuật toán **Machine Learning** (Decision Tree, Naive Bayes) để phân tích và dự báo **tình trạng hôn nhân (MARST)** của giới trẻ Việt Nam 18-35 tuổi dựa trên dữ liệu **IPUMS International** và dữ liệu panel microdata.
+
+### Biến mục tiêu (Target Variable)
+
+- **Y_married (MARST)**: Tình trạng hôn nhân
+  - `0`: Chưa kết hôn (Single/Never married)
+  - `1`: Đã kết hôn (Married/In union)
 
 ## Tính năng chính
 
 - **Phân tích dữ liệu**: Trực quan hóa và khám phá dữ liệu điều tra dân số
 - **Huấn luyện mô hình**: So sánh nhiều thuật toán ML (Decision Tree, Naive Bayes)
-- **Dự báo**: Dự đoán xu hướng kết hôn dựa trên các đặc điểm nhân khẩu học
+- **Dự báo tình trạng hôn nhân**: Dự đoán khả năng kết hôn dựa trên các đặc điểm nhân khẩu học
 - **AI Assistant**: Tích hợp Gemini AI để phân tích và đưa ra khuyến nghị
+
+## Các biến đầu vào (Features)
+
+| Biến | Mô tả | Giá trị |
+|------|-------|---------|
+| `age_group` | Nhóm tuổi | 18-24, 25-29, 30-35 |
+| `sex` | Giới tính | Nam, Nữ |
+| `education_level` | Trình độ học vấn | ≤THPT, ĐH/CĐ+ |
+| `urban_rural` | Khu vực sinh sống | Đô thị, Nông thôn |
+| `region` | Vùng miền | Bắc, Trung, Nam |
+| `home_ownership` | Sở hữu nhà | 0 (Không), 1 (Có) |
+| `living_area_level` | Diện tích nhà ở | Nhỏ, Trung bình, Khá, Rộng |
+| `household_size_group` | Quy mô hộ gia đình | 1-2, 3-4, 5-6, >6 người |
 
 ## Nguồn dữ liệu
 

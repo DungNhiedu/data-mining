@@ -1,8 +1,13 @@
 # =============================================================================
-# ĐỒ ÁN: Dự báo Quyết định Kết Hôn trong Năm (18–35), Giai đoạn 2019–2024
+# ĐỒ ÁN: Dự báo Tình trạng Hôn nhân của Giới trẻ (18–35), Giai đoạn 2019–2024
 # =============================================================================
 # File: marriage_prediction_model.py
 # Mô tả: Mô hình Decision Tree và Naive Bayes cho dự báo kết hôn
+#
+# BIẾN MỤC TIÊU (Target Variable):
+#   - Y_married: Tình trạng hôn nhân
+#     + 0 = Chưa kết hôn
+#     + 1 = Đã kết hôn
 # =============================================================================
 
 import numpy as np

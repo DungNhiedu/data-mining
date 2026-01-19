@@ -1,9 +1,10 @@
 # =============================================================================
-# ĐỒ ÁN: Áp dụng Cây quyết định và Naive Bayes phân tích xu hướng kết hôn, 
-#        sinh con của giới trẻ Việt Nam (18–35)
+# ĐỒ ÁN: Dự báo Tình trạng Hôn nhân của Giới trẻ Việt Nam (18–35)
 # =============================================================================
 # File: visualization.py
 # Mô tả: Các hàm visualization cho phân tích và báo cáo
+#
+# BIẾN MỤC TIÊU: Y_married (MARST) - Tình trạng hôn nhân (0/1)
 # =============================================================================
 
 import numpy as np

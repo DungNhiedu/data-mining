@@ -1,8 +1,13 @@
 # =============================================================================
-# ĐỒ ÁN: Dự báo Quyết định Kết Hôn trong Năm (18–35), Giai đoạn 2019–2024
+# ĐỒ ÁN: Dự báo Tình trạng Hôn nhân của Giới trẻ (18–35), Giai đoạn 2019–2024
 # =============================================================================
 # File: panel_data_generator.py
 # Mô tả: Tạo panel synthetic microdata với các biến kinh tế vĩ mô
+#
+# BIẾN MỤC TIÊU (Target Variable):
+#   - Y_married: Tình trạng hôn nhân
+#     + 0 = Chưa kết hôn
+#     + 1 = Đã kết hôn
 # =============================================================================
 
 import numpy as np

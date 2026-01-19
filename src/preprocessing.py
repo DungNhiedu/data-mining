@@ -13,10 +13,13 @@ from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder, S
 from sklearn.compose import ColumnTransformer
 
 # Định nghĩa các features cho dữ liệu thực (nso data)
-# Features cho mô hình dự đoán xu hướng kết hôn
+# Features cho mô hình dự đoán xu hướng kết hôn (cấp tỉnh)
 FEATURES_REAL = ['vung_mien', 'vung_kinh_te', 'urban_rural', 'tfr_level', 'nam']
 FEATURES_NUMERIC = ['tfr', 'ty_le_ket_hon', 'dan_so_2019', 'mat_do']
-TARGET_REAL = 'trend'  # 0: Giảm, 1: Tăng/Giữ nguyên
+TARGET_REAL = 'trend'  # 0: Giảm, 1: Tăng/Giữ nguyên (xu hướng kết hôn cấp tỉnh)
+
+# Features cho dữ liệu IPUMS (cấp cá nhân) - Biến mục tiêu: Y_married (MARST)
+# Xem file train_marriage_model.py và ipums_data_processor.py để biết chi tiết
 
 # Features cũ cho synthetic data (giữ lại để tương thích)
 FEATURES = ["age_group", "sex", "region", "urban_rural", "education", "income_level", "has_child"]

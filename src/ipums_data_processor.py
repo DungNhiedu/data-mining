@@ -3,7 +3,13 @@
 # =============================================================================
 # File: ipums_data_processor.py
 # Mô tả: Xử lý dữ liệu điều tra dân số Việt Nam từ IPUMS International
-#        để tạo dataset dự báo xác suất kết hôn
+#        để tạo dataset dự báo TÌNH TRẠNG HÔN NHÂN (MARST)
+# 
+# BIẾN MỤC TIÊU (Target Variable):
+#   - Y_married (từ MARST): Tình trạng hôn nhân
+#     + 0 = Single/never married (Chưa kết hôn)
+#     + 1 = Married/in union (Đã kết hôn)
+#
 # Nguồn dữ liệu: IPUMS International (Minnesota Population Center)
 #        - Vietnam 2009 Census
 #        - Vietnam 2019 Census

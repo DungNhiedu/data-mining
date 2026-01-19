@@ -1,8 +1,14 @@
 # =============================================================================
-# ĐỒ ÁN: Dự báo Xu hướng Kết Hôn trong Năm (18–35), Giai đoạn 2019–2024
+# ĐỒ ÁN: Dự báo Tình trạng Hôn nhân của Giới trẻ (18–35), Giai đoạn 2019–2024
 # =============================================================================
 # File: app_panel.py (Streamlit App)
 # Mô tả: Ứng dụng demo dự báo kết hôn với panel data
+#
+# BIẾN MỤC TIÊU (Target Variable):
+#   - Y_married (từ MARST): Tình trạng hôn nhân
+#     + 0 = Chưa kết hôn (Single/never married)
+#     + 1 = Đã kết hôn (Married/in union)
+#
 # UI Style: Material Kit React (Devias) - Professional Dashboard
 # =============================================================================
 

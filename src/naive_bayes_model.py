@@ -1,9 +1,13 @@
 # =============================================================================
-# ĐỒ ÁN: Áp dụng Cây quyết định và Naive Bayes phân tích xu hướng kết hôn, 
-#        sinh con của giới trẻ Việt Nam (18–35)
+# ĐỒ ÁN: Dự báo Tình trạng Hôn nhân của Giới trẻ Việt Nam (18–35)
 # =============================================================================
 # File: naive_bayes_model.py
 # Mô tả: Mô hình Naive Bayes (CategoricalNB/GaussianNB) với Laplace smoothing
+#
+# BIẾN MỤC TIÊU (Target Variable):
+#   - Y_married (từ MARST): Tình trạng hôn nhân
+#     + 0 = Chưa kết hôn (Single/never married)
+#     + 1 = Đã kết hôn (Married/in union)
 # =============================================================================
 
 import numpy as np
@@ -210,7 +214,7 @@ class NaiveBayesModel:
         Vẽ ma trận nhầm lẫn
         """
         if class_names is None:
-            class_names = ["Giảm", "Tăng/Giữ nguyên"]
+            class_names = ["Chưa kết hôn", "Đã kết hôn"]
             
         cm = confusion_matrix(y_test, y_pred)
         
@@ -236,10 +240,10 @@ class NaiveBayesModel:
         y_proba = self.predict_proba(X_test)[:, 1]
         
         plt.figure(figsize=(10, 6))
-        plt.hist(y_proba[y_test == 0], bins=20, alpha=0.5, label='Giảm (actual)', color='red')
-        plt.hist(y_proba[y_test == 1], bins=20, alpha=0.5, label='Tăng (actual)', color='green')
+        plt.hist(y_proba[y_test == 0], bins=20, alpha=0.5, label='Chưa kết hôn (actual)', color='red')
+        plt.hist(y_proba[y_test == 1], bins=20, alpha=0.5, label='Đã kết hôn (actual)', color='green')
         plt.axvline(x=0.5, color='black', linestyle='--', label='Threshold=0.5')
-        plt.xlabel('Predicted Probability of Tăng')
+        plt.xlabel('Predicted Probability of Đã kết hôn')
         plt.ylabel('Frequency')
         plt.title('Probability Distribution by Actual Class')
         plt.legend()
