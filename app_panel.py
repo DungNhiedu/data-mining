@@ -127,6 +127,12 @@ st.markdown("""
     .stSelectbox label, .stTextInput label, .stSlider label {
         font-size: 1.1rem !important;
         font-weight: 500 !important;
+        color: #ffffff !important;
+    }
+    
+    /* Chỉnh màu chữ label thành trắng */
+    .stSlider label p, .stSelectbox label p {
+        color: #ffffff !important;
     }
     
     /* ========================================
@@ -1425,9 +1431,11 @@ def main():
                 fig1 = px.bar(
                     yearly_stats, x="year", y="Số đã kết hôn",
                     title="Số người đã kết hôn theo năm điều tra",
-                    color_discrete_sequence=[THEME["primary"]]
+                    color_discrete_sequence=[THEME["primary"]],
+                    labels={"Số đã kết hôn": "Số đã kết hôn (người)", "year": "Năm"}
                 )
                 fig1.update_layout(**create_material_chart_layout())
+                fig1.update_yaxes(title_text="Số đã kết hôn (người)")
                 fig1.update_traces(marker_line_width=0, marker_cornerradius=6)
                 st.plotly_chart(fig1, use_container_width=True)
             
@@ -1435,9 +1443,11 @@ def main():
                 fig2 = px.bar(
                     yearly_stats, x="year", y="Tỷ lệ kết hôn",
                     title="Tỷ lệ kết hôn theo năm điều tra",
-                    color_discrete_sequence=[THEME["success"]]
+                    color_discrete_sequence=[THEME["success"]],
+                    labels={"Tỷ lệ kết hôn": "Tỷ lệ kết hôn (%)", "year": "Năm"}
                 )
                 fig2.update_layout(**create_material_chart_layout())
+                fig2.update_yaxes(title_text="Tỷ lệ kết hôn (%)")
                 fig2.update_traces(marker_line_width=0, marker_cornerradius=6)
                 st.plotly_chart(fig2, use_container_width=True)
             
