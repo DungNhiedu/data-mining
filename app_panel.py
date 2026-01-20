@@ -21,25 +21,28 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-# Google Gemini AI
+# Load environment variables từ file .env
+from dotenv import load_dotenv
+load_dotenv()
+
+# Google Gemini AI - SDK mới (google-genai)
 try:
-    import google.generativeai as genai
+    from google import genai
     GEMINI_AVAILABLE = True
 except ImportError:
-    GEMINI_AVAILABLE = False
+    try:
+        # Fallback to old SDK
+        import google.generativeai as genai
+        GEMINI_AVAILABLE = True
+    except ImportError:
+        GEMINI_AVAILABLE = False
 
-# =============================================================================
-# CẤU HÌNH TRANG
-# =============================================================================
 st.set_page_config(
     page_title="Dự báo Xu hướng Kết Hôn - Việt Nam 2019-2024",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# =============================================================================
-# MATERIAL KIT REACT THEME - DEVIAS DESIGN SYSTEM
-# =============================================================================
 st.markdown("""
 <style>
     /* ========================================
@@ -694,10 +697,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
-# =============================================================================
-# MATERIAL THEME COLORS - Based on Material Kit React
-# =============================================================================
 THEME = {
     # Primary - Neon Blue
     "primary": "#635BFF",
@@ -745,31 +744,35 @@ CHART_COLORS = [
     "#5fe9ce",  # Success Light
 ]
 
-# Gemini API Key - Lấy từ biến môi trường
+# Gemini API Key - Đọc từ biến môi trường hoặc file .env
+# Để sử dụng: tạo file .env với nội dung GEMINI_API_KEY=your_api_key_here
+# Hoặc set biến môi trường: export GEMINI_API_KEY=your_api_key_here
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 # Khởi tạo Gemini client
 @st.cache_resource
 def init_gemini():
-    """Khởi tạo Gemini AI client"""
+    """Khởi tạo Gemini AI client với SDK mới (google-genai)"""
     if GEMINI_AVAILABLE and GEMINI_API_KEY:
         try:
-            genai.configure(api_key=GEMINI_API_KEY)
-            return genai.GenerativeModel('gemini-2.0-flash')
+            # SDK mới: google-genai
+            client = genai.Client(api_key=GEMINI_API_KEY)
+            return client
         except Exception as e:
-            st.error(f"Lỗi khởi tạo Gemini: {e}")
-            return None
+            # Fallback: SDK cũ
+            try:
+                genai.configure(api_key=GEMINI_API_KEY)
+                return genai.GenerativeModel('gemini-2.5-flash')
+            except Exception as e2:
+                st.error(f"Lỗi khởi tạo Gemini: {e2}")
+                return None
     return None
 
-# =============================================================================
-# HÀM TẢI DỮ LIỆU VÀ MÔ HÌNH
-# =============================================================================
 @st.cache_resource
 def load_models():
     """Tải các mô hình đã huấn luyện - chỉ 3 mô hình chính"""
     models = {}
     
-    # Chỉ 3 mô hình: Decision Tree (Entropy), Decision Tree (Gini), Naive Bayes
     ipums_model_files = {
         "Decision Tree (Entropy)": "models/decision_tree_entropy_ipums.pkl",
         "Decision Tree (Gini)": "models/decision_tree_gini_ipums.pkl",
@@ -846,9 +849,6 @@ def load_macro_data():
     return m
 
 
-# =============================================================================
-# CÁC HÀM HIỂN THỊ
-# =============================================================================
 def render_header(text, size="large"):
     """Render header với style Material Kit - không có icon"""
     if size == "large":
@@ -1021,10 +1021,6 @@ DỮ LIỆU THỐNG KÊ THỰC TẾ TỪ ĐIỀU TRA DÂN SỐ VIỆT NAM (IPUMS
 """
     return summary
 
-
-# =============================================================================
-# TRANG CHÍNH
-# =============================================================================
 def main():
     # Sidebar với Material Kit React Design
     with st.sidebar:
@@ -1105,10 +1101,6 @@ def main():
         st.markdown('<hr style="border-color: rgba(255,255,255,0.08); margin: 20px 0;">', unsafe_allow_html=True)
         
     
-    # =========================================================================
-    # MAIN CONTENT
-    # =========================================================================
-    
     # Header với pattern overlay
     st.markdown("""
     <div class="main-header">
@@ -1133,9 +1125,6 @@ def main():
         "DỰ BÁO BỞI AI"
     ])
     
-    # =========================================================================
-    # TAB 1: DỰ BÁO CÁ NHÂN
-    # =========================================================================
     with tab1:
         render_header("Dự báo xác suất kết hôn")
         
@@ -1353,9 +1342,6 @@ def main():
             else:
                 st.warning("Vui lòng chọn mô hình hợp lệ")
     
-    # =========================================================================
-    # TAB 2: PHÂN TÍCH DỮ LIỆU
-    # =========================================================================
     with tab2:
         render_header("Phân tích dữ liệu Điều tra Dân số Việt Nam (IPUMS)")
         
@@ -1591,9 +1577,6 @@ def main():
                     
                     st.info("Vui lòng nhấn F5 hoặc reload trang để xem đầy đủ biểu đồ phân tích.")
     
-    # =========================================================================
-    # TAB 3: LUẬT IF-THEN
-    # =========================================================================
     with tab3:
         render_header("Luật IF-THEN từ Decision Tree")
         
@@ -1677,9 +1660,6 @@ def main():
             </div>
             """, unsafe_allow_html=True)
     
-    # =========================================================================
-    # TAB 4: SO SÁNH MÔ HÌNH
-    # =========================================================================
     with tab4:
         render_header("So sánh hiệu năng các mô hình")
         
@@ -1785,9 +1765,6 @@ def main():
         </div>
         """, unsafe_allow_html=True)
     
-    # =========================================================================
-    # TAB 5: YẾU TỐ ẢNH HƯỞNG
-    # =========================================================================
     with tab5:
         render_header("Các yếu tố ảnh hưởng đến quyết định kết hôn")
         
@@ -1899,67 +1876,138 @@ def main():
             </div>
             """, unsafe_allow_html=True)
     
-    # =========================================================================
-    # TAB 6: DỰ BÁO BỞI AI (GEMINI)
-    # =========================================================================
+    # ==========================================================================
+    # TAB 6: DỰ BÁO BỞI AI - Sử dụng fragment để tránh reset tab
+    # ==========================================================================
     with tab6:
-        render_header("Dự báo xu hướng kết hôn bằng AI (Google Gemini)")
+        render_ai_prediction_tab(panel_data)
+
+
+@st.fragment
+def render_ai_prediction_tab(panel_data):
+    """
+    Fragment để render tab AI prediction.
+    Sử dụng @st.fragment để chỉ rerun phần này khi có interaction,
+    không rerun toàn bộ app (tránh reset về tab đầu tiên).
+    """
+    render_header("Dự báo xu hướng kết hôn bằng AI (Google Gemini)")
+    
+    # Khởi tạo session state cho AI results
+    if 'ai_result' not in st.session_state:
+        st.session_state.ai_result = None
+    if 'ai_result_type' not in st.session_state:
+        st.session_state.ai_result_type = None
+    if 'ai_result_year' not in st.session_state:
+        st.session_state.ai_result_year = None
+    
+    # Khởi tạo Gemini model
+    gemini_model = init_gemini()
+    
+    # Hiển thị trạng thái kết nối
+    if gemini_model:
+        st.markdown(f"""
+        <div style="background: rgba(21, 183, 159, 0.1); border: 1px solid {THEME['success']}; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+            <div style="width: 12px; height: 12px; background: {THEME['success']}; border-radius: 50%; animation: pulse 2s infinite;"></div>
+            <p style="color: {THEME['success']}; margin: 0; font-weight: 600;">Gemini AI đã sẵn sàng</p>
+        </div>
+        <style>
+            @keyframes pulse {{
+                0%, 100% {{ opacity: 1; }}
+                50% {{ opacity: 0.5; }}
+            }}
+        </style>
+        """, unsafe_allow_html=True)
+    else:
+        st.error("Không thể kết nối với Gemini AI. Vui lòng kiểm tra cấu hình.")
+        return
+    
+    # Chọn kiểu dự báo và năm
+    col_pred1, col_pred2 = st.columns(2)
+    with col_pred1:
+        prediction_type_options = [
+            "Xu hướng tổng quát 2025-2030", 
+            "Dự báo theo vùng/miền",
+            "Dự báo theo nhóm tuổi",
+            "Phân tích yếu tố kinh tế"
+        ]
+        prediction_type = st.selectbox(
+            "Chọn loại dự báo:",
+            prediction_type_options,
+            key="ai_pred_type_select"
+        )
+    with col_pred2:
+        target_year_options = [2025, 2026, 2027, 2028, 2029, 2030]
+        target_year = st.selectbox(
+            "Năm dự báo:",
+            target_year_options,
+            key="ai_pred_year_select"
+        )
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Button dự báo
+    if st.button("Dự Báo với AI", type="primary", use_container_width=True, key="ai_predict_button"):
+        _call_gemini_ai(gemini_model, panel_data, prediction_type, target_year)
+    
+    # Hiển thị kết quả nếu có
+    _display_ai_result()
+    
+    # Hiển thị dữ liệu tham khảo
+    _display_reference_data(panel_data)
+
+
+def _call_gemini_ai(gemini_model, panel_data, prediction_type, target_year):
+    """Gọi Gemini AI và lưu kết quả vào session_state"""
+    try:
+        data_context = get_data_summary_for_ai(panel_data)
+        prompt = _build_ai_prompt(data_context, prediction_type, target_year)
         
-        # Khởi tạo Gemini model
-        gemini_model = init_gemini()
-        
-        # Hiển thị trạng thái kết nối
-        if gemini_model:
-            st.markdown(f"""
-            <div style="background: rgba(21, 183, 159, 0.1); border: 1px solid {THEME['success']}; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
-                <div style="width: 12px; height: 12px; background: {THEME['success']}; border-radius: 50%; animation: pulse 2s infinite;"></div>
-                <p style="color: {THEME['success']}; margin: 0; font-weight: 600;">Gemini AI đã sẵn sàng</p>
-            </div>
-            <style>
-                @keyframes pulse {{
-                    0%, 100% {{ opacity: 1; }}
-                    50% {{ opacity: 0.5; }}
-                }}
-            </style>
-            """, unsafe_allow_html=True)
-        else:
-            st.error("Không thể kết nối với Gemini AI. Vui lòng kiểm tra cấu hình.")
-        
-        # Chọn kiểu dự báo và năm
-        col_pred1, col_pred2 = st.columns(2)
-        with col_pred1:
-            prediction_type_options = [
-                "Xu hướng tổng quát 2025-2030", 
-                "Dự báo theo vùng/miền",
-                "Dự báo theo nhóm tuổi",
-                "Phân tích yếu tố kinh tế"
-            ]
-            prediction_type = st.selectbox(
-                "Chọn loại dự báo:",
-                prediction_type_options,
-                key="ai_prediction_type"
-            )
-        with col_pred2:
-            target_year_options = [2025, 2026, 2027, 2028, 2029, 2030]
-            target_year = st.selectbox(
-                "Năm dự báo:",
-                target_year_options,
-                key="ai_target_year"
-            )
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        # Button dự báo
-        if st.button("Dự Báo với AI", type="primary", use_container_width=True, key="ai_predict_btn"):
-            if not gemini_model:
-                st.error("Gemini AI chưa được khởi tạo. Vui lòng thử lại.")
-            else:
+        with st.spinner("AI đang phân tích dữ liệu và tạo dự báo..."):
+            import time
+            max_retries = 3
+            retry_delay = 5
+            response_text = None
+            
+            for attempt in range(max_retries):
                 try:
-                    # Lấy data summary
-                    data_context = get_data_summary_for_ai(panel_data)
-                    
-                    # Tạo prompt dựa trên loại dự báo
-                    base_instructions = """
+                    # SDK mới: google-genai (Client)
+                    if hasattr(gemini_model, 'models'):
+                        result = gemini_model.models.generate_content(
+                            model='gemini-2.5-flash',
+                            contents=prompt
+                        )
+                        response_text = result.text
+                    else:
+                        # SDK cũ: google-generativeai (GenerativeModel)
+                        result = gemini_model.generate_content(prompt)
+                        response_text = result.text
+                    break
+                except Exception as retry_error:
+                    error_str = str(retry_error)
+                    if "429" in error_str and attempt < max_retries - 1:
+                        st.warning(f"API đang bận, thử lại sau {retry_delay}s... (lần {attempt + 1}/{max_retries})")
+                        time.sleep(retry_delay)
+                        retry_delay *= 2
+                    elif "429" in error_str:
+                        raise Exception("Đã vượt quá giới hạn API. Vui lòng chờ vài phút.")
+                    else:
+                        raise retry_error
+            
+            if response_text is None:
+                raise Exception("Không thể kết nối với Gemini AI sau nhiều lần thử")
+            
+            # Lưu kết quả vào session_state
+            st.session_state.ai_result = response_text
+            st.session_state.ai_result_type = prediction_type
+            st.session_state.ai_result_year = target_year
+            
+    except Exception as e:
+        st.error(f"Lỗi khi gọi Gemini AI: {str(e)}")
+
+
+def _build_ai_prompt(data_context, prediction_type, target_year):
+    """Tạo prompt cho Gemini AI dựa trên loại dự báo"""
+    base_instructions = """
 Bạn là chuyên gia phân tích dữ liệu về xu hướng kết hôn tại Việt Nam.
 Dữ liệu này được lấy từ Tổng điều tra dân số Việt Nam (IPUMS International).
 Dựa trên dữ liệu thống kê thực tế dưới đây, hãy phân tích và đưa ra dự báo CHI TIẾT.
@@ -1979,186 +2027,130 @@ QUAN TRỌNG:
 - Trả lời bằng tiếng Việt có dấu
 - Đưa ra số liệu cụ thể, % dự báo rõ ràng
 - Giải thích LÝ DO dựa trên dữ liệu thực tế
-- Nêu rõ các yếu tố ảnh hưởng từ dữ liệu
 - Format response với heading và bullet points rõ ràng
 """
-                    
-                    if prediction_type == "Xu hướng tổng quát 2025-2030":
-                        prompt = f"""{base_instructions}
-
-{data_context}
-
+    
+    prompts = {
+        "Xu hướng tổng quát 2025-2030": f"""
 Hãy dự báo XU HƯỚNG KẾT HÔN TỔNG QUÁT cho năm {target_year} và giai đoạn 2025-2030:
 
-1. **DỰ BÁO TỶ LỆ KẾT HÔN**
-   - Tỷ lệ kết hôn năm {target_year} sẽ là bao nhiêu %?
-   - So sánh với xu hướng 2019-2024
+1. **DỰ BÁO TỶ LỆ KẾT HÔN** - Tỷ lệ kết hôn năm {target_year} sẽ là bao nhiêu %?
+2. **LÝ DO VÀ YẾU TỐ ẢNH HƯỞNG** - Yếu tố nào từ dữ liệu ảnh hưởng mạnh nhất?
+3. **DỰ BÁO CHI TIẾT TỪNG NĂM 2025-2030** - Đưa ra con số % cụ thể cho mỗi năm
+4. **KHUYẾN NGHỊ CHÍNH SÁCH** - Đề xuất giải pháp cụ thể
+""",
+        "Dự báo theo vùng/miền": f"""
+Hãy phân tích XU HƯỚNG KẾT HÔN THEO VÙNG (Bắc, Trung, Nam) cho năm {target_year}:
 
-2. **LÝ DO VÀ YẾU TỐ ẢNH HƯỞNG**
-   - Dựa vào dữ liệu thực tế, giải thích tại sao có xu hướng này
-   - Yếu tố nào từ dữ liệu ảnh hưởng mạnh nhất?
-
-3. **DỰ BÁO CHI TIẾT TỪNG NĂM 2025-2030**
-   - Đưa ra con số % cụ thể cho mỗi năm
-   - Giải thích xu hướng tăng/giảm
-
-4. **KHUYẾN NGHỊ CHÍNH SÁCH**
-   - Dựa trên phân tích, đề xuất giải pháp cụ thể
-"""
-                    elif prediction_type == "Dự báo theo vùng/miền":
-                        prompt = f"""{base_instructions}
-
-{data_context}
-
-Hãy phân tích và dự báo XU HƯỚNG KẾT HÔN THEO VÙNG (Bắc, Trung, Nam) cho năm {target_year}:
-
-1. **SO SÁNH XU HƯỚNG GIỮA CÁC VÙNG**
-   - Vùng nào có tỷ lệ kết hôn cao nhất/thấp nhất?
-   - Dựa vào số liệu thực tế để so sánh
-
-2. **DỰ BÁO CỤ THỂ CHO TỪNG VÙNG NĂM {target_year}**
-   - Bắc: dự báo % cụ thể và lý do
-   - Trung: dự báo % cụ thể và lý do
-   - Nam: dự báo % cụ thể và lý do
-
-3. **NGUYÊN NHÂN KHÁC BIỆT**
-   - Phân tích tại sao có sự khác biệt giữa các vùng
-   - Yếu tố kinh tế, văn hóa, xã hội
-
+1. **SO SÁNH XU HƯỚNG GIỮA CÁC VÙNG** - Vùng nào có tỷ lệ kết hôn cao/thấp nhất?
+2. **DỰ BÁO CỤ THỂ CHO TỪNG VÙNG** - Bắc, Trung, Nam: dự báo % và lý do
+3. **NGUYÊN NHÂN KHÁC BIỆT** - Yếu tố kinh tế, văn hóa, xã hội
 4. **KHUYẾN NGHỊ CHÍNH SÁCH RIÊNG CHO TỪNG VÙNG**
+""",
+        "Dự báo theo nhóm tuổi": f"""
+Hãy phân tích XU HƯỚNG KẾT HÔN THEO NHÓM TUỔI (18-24, 25-29, 30-35) cho năm {target_year}:
+
+1. **PHÂN TÍCH XU HƯỚNG THEO NHÓM TUỔI** - Nhóm nào có tỷ lệ kết hôn cao/thấp nhất?
+2. **DỰ BÁO CỤ THỂ** - Nhóm 18-24, 25-29, 30-35: dự báo % và lý do
+3. **TUỔI KẾT HÔN TRUNG BÌNH** - Dự báo sẽ thay đổi như thế nào?
+4. **KHUYẾN NGHỊ** - Chính sách khuyến khích kết hôn phù hợp từng nhóm tuổi
+""",
+        "Phân tích yếu tố kinh tế": f"""
+Hãy phân tích ẢNH HƯỞNG CỦA CÁC YẾU TỐ KINH TẾ ĐẾN QUYẾT ĐỊNH KẾT HÔN năm {target_year}:
+
+1. **ẢNH HƯỞNG CỦA SỞ HỮU NHÀ Ở** - Tác động của home_ownership
+2. **ẢNH HƯỞNG CỦA DIỆN TÍCH NHÀ** - Mối quan hệ living_area_level với tỷ lệ kết hôn
+3. **TÁC ĐỘNG CỦA TRÌNH ĐỘ HỌC VẤN** - Phân tích education_level
+4. **SO SÁNH ĐÔ THỊ - NÔNG THÔN** - Yếu tố nào gây ra khác biệt?
+5. **KHUYẾN NGHỊ CHÍNH SÁCH** - Đề xuất cụ thể hỗ trợ giới trẻ
 """
-                    elif prediction_type == "Dự báo theo nhóm tuổi":
-                        prompt = f"""{base_instructions}
-
-{data_context}
-
-Hãy phân tích và dự báo XU HƯỚNG KẾT HÔN THEO NHÓM TUỔI (18-24, 25-29, 30-35) cho năm {target_year}:
-
-1. **PHÂN TÍCH XU HƯỚNG THEO NHÓM TUỔI**
-   - Nhóm nào có tỷ lệ kết hôn cao nhất/thấp nhất?
-   - So sánh với dữ liệu thực tế 2019-2024
-
-2. **DỰ BÁO CỤ THỂ CHO NĂM {target_year}**
-   - Nhóm 18-24: dự báo % và lý do
-   - Nhóm 25-29: dự báo % và lý do
-   - Nhóm 30-35: dự báo % và lý do
-
-3. **TUỔI KẾT HÔN TRUNG BÌNH**
-   - Dự báo tuổi kết hôn trung bình sẽ thay đổi như thế nào?
-   - Nguyên nhân giới trẻ trì hoãn kết hôn
-
-4. **KHUYẾN NGHỊ**
-   - Đề xuất chính sách khuyến khích kết hôn phù hợp từng nhóm tuổi
-"""
-                    else:  # Phân tích yếu tố kinh tế
-                        prompt = f"""{base_instructions}
-
-{data_context}
-
-Hãy phân tích ẢNH HƯỞNG CỦA CÁC YẾU TỐ ĐẾN QUYẾT ĐỊNH KẾT HÔN năm {target_year}:
-
-1. **ẢNH HƯỞNG CỦA SỞ HỮU NHÀ Ở**
-   - Dựa vào dữ liệu home_ownership, phân tích tác động
-   - Dự báo xu hướng khi giá nhà tiếp tục tăng
-
-2. **ẢNH HƯỞNG CỦA DIỆN TÍCH NHÀ Ở**
-   - Phân tích mối quan hệ living_area_level với tỷ lệ kết hôn
-   - Nhóm diện tích nào có triển vọng kết hôn tốt nhất?
-
-3. **TÁC ĐỘNG CỦA TRÌNH ĐỘ HỌC VẤN**
-   - Phân tích dữ liệu education_level
-   - Người học vấn cao có xu hướng kết hôn như thế nào?
-
-4. **SO SÁNH ĐÔ THỊ - NÔNG THÔN**
-   - Phân tích chi tiết sự khác biệt từ dữ liệu
-   - Yếu tố nào gây ra khác biệt này?
-
-5. **ẢNH HƯỞNG CỦA QUY MÔ HỘ GIA ĐÌNH**
-   - Phân tích tác động của household_size_group
-   - Sống cùng gia đình đa thế hệ ảnh hưởng thế nào?
-
-6. **KHUYẾN NGHỊ CHÍNH SÁCH**
-   - Đề xuất cụ thể để hỗ trợ giới trẻ kết hôn
-"""
-                    
-                    with st.spinner("🔮 AI đang phân tích dữ liệu và tạo dự báo..."):
-                        response = gemini_model.generate_content(prompt)
-                        
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    render_header(f"Kết quả dự báo - {prediction_type}", size="small")
-                    
-                    # Hiển thị kết quả trong box đẹp
-                    st.markdown(f"""
-                    <div style="background: {THEME['surface']}; border-radius: 20px; padding: 28px; margin: 20px 0; border: 1px solid rgba(99, 91, 255, 0.15);">
-                        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px;">
-                            <div style="width: 52px; height: 52px; background: linear-gradient(135deg, #635BFF, #4e36f5); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                                <span style="color: white; font-weight: 700; font-size: 18px;">AI</span>
-                            </div>
-                            <div>
-                                <h4 style="color: {THEME['text_primary']}; margin: 0; font-weight: 600; font-size: 1.2em;">Google Gemini AI</h4>
-                                <p style="color: {THEME['text_secondary']}; margin: 0; font-size: 1em;">Dự báo cho năm {target_year}</p>
-                            </div>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # Hiển thị response với style
-                    st.markdown(f'<div class="ai-result-box">{response.text}</div>', unsafe_allow_html=True)
-                    
-                    # Hiển thị disclaimer
-                    st.markdown(f"""
-                    <div class="warning-box" style="margin-top: 24px;">
-                        <p style="color: {THEME['warning']}; font-weight: 600; margin: 0 0 8px 0; font-size: 1.1em;">Lưu ý quan trọng</p>
-                        <p style="color: {THEME['text_secondary']}; margin: 0; font-size: 1em; line-height: 1.7;">
-                            Kết quả dự báo được tạo bởi AI dựa trên dữ liệu lịch sử và các mô hình phân tích. 
-                            Đây chỉ là dự báo tham khảo, không phải dự báo chính thức. 
-                            Các yếu tố bất ngờ (dịch bệnh, khủng hoảng kinh tế, thay đổi chính sách) có thể ảnh hưởng đến kết quả thực tế.
-                        </p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                except Exception as e:
-                    st.error(f"Lỗi khi gọi Gemini AI: {str(e)}")
-                    st.info("Hệ thống đang gặp sự cố. Vui lòng thử lại sau.")
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        # Hiển thị dữ liệu hiện có
-        if panel_data is not None:
-            render_header("Dữ liệu hiện có (2019-2024)", size="small")
-            
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                yearly_stats = panel_data.groupby("year")["Y_married"].mean().reset_index()
-                fig1 = px.line(yearly_stats, x="year", y="Y_married", 
-                              title="Tỷ lệ kết hôn theo năm",
-                              markers=True,
-                              color_discrete_sequence=[THEME["primary"]])
-                fig1.update_layout(**create_material_chart_layout(), height=300)
-                st.plotly_chart(fig1, use_container_width=True)
-            
-            with col2:
-                region_stats = panel_data.groupby("region")["Y_married"].mean().reset_index()
-                fig2 = px.bar(region_stats, x="region", y="Y_married",
-                             title="Tỷ lệ kết hôn theo vùng",
-                             color="region",
-                             color_discrete_sequence=[THEME["success"], THEME["warning"], THEME["error"]])
-                fig2.update_layout(**create_material_chart_layout(), height=300, showlegend=False)
-                st.plotly_chart(fig2, use_container_width=True)
-            
-            with col3:
-                age_stats = panel_data.groupby("age_group")["Y_married"].mean().reset_index()
-                fig3 = px.bar(age_stats, x="age_group", y="Y_married",
-                             title="Tỷ lệ kết hôn theo nhóm tuổi",
-                             color="age_group",
-                             color_discrete_sequence=[THEME["info"], THEME["primary"], THEME["success"]])
-                fig3.update_layout(**create_material_chart_layout(), height=300, showlegend=False)
-                st.plotly_chart(fig3, use_container_width=True)
+    }
     
-    # =========================================================================
-    # FOOTER
-    # =========================================================================
+    return f"{base_instructions}\n\n{data_context}\n\n{prompts.get(prediction_type, prompts['Xu hướng tổng quát 2025-2030'])}"
+
+
+def _display_ai_result():
+    """Hiển thị kết quả AI prediction"""
+    if not st.session_state.ai_result:
+        return
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    render_header(f"Kết quả dự báo - {st.session_state.ai_result_type}", size="small")
+    
+    # Header box
+    st.markdown(f"""
+    <div style="background: {THEME['surface']}; border-radius: 20px; padding: 28px; margin: 20px 0; border: 1px solid rgba(99, 91, 255, 0.15);">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px;">
+            <div style="width: 52px; height: 52px; background: linear-gradient(135deg, #635BFF, #4e36f5); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+                <span style="color: white; font-weight: 700; font-size: 18px;">AI</span>
+            </div>
+            <div>
+                <h4 style="color: {THEME['text_primary']}; margin: 0; font-weight: 600; font-size: 1.2em;">Google Gemini AI</h4>
+                <p style="color: {THEME['text_secondary']}; margin: 0; font-size: 1em;">Dự báo cho năm {st.session_state.ai_result_year}</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Response content
+    st.markdown(f'<div class="ai-result-box">{st.session_state.ai_result}</div>', unsafe_allow_html=True)
+    
+    # Disclaimer
+    st.markdown(f"""
+    <div class="warning-box" style="margin-top: 24px;">
+        <p style="color: {THEME['warning']}; font-weight: 600; margin: 0 0 8px 0; font-size: 1.1em;">Lưu ý quan trọng</p>
+        <p style="color: {THEME['text_secondary']}; margin: 0; font-size: 1em; line-height: 1.7;">
+            Kết quả dự báo được tạo bởi AI dựa trên dữ liệu lịch sử. 
+            Đây chỉ là dự báo tham khảo, không phải dự báo chính thức.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Clear button
+    if st.button("Xóa kết quả", key="clear_ai_result_btn"):
+        st.session_state.ai_result = None
+        st.session_state.ai_result_type = None
+        st.session_state.ai_result_year = None
+        st.rerun()
+
+
+def _display_reference_data(panel_data):
+    """Hiển thị dữ liệu tham khảo"""
+    if panel_data is None:
+        return
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    render_header("Dữ liệu hiện có (2019-2024)", size="small")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        yearly_stats = panel_data.groupby("year")["Y_married"].mean().reset_index()
+        fig1 = px.line(yearly_stats, x="year", y="Y_married", 
+                      title="Tỷ lệ kết hôn theo năm",
+                      markers=True,
+                      color_discrete_sequence=[THEME["primary"]])
+        fig1.update_layout(**create_material_chart_layout(), height=300)
+        st.plotly_chart(fig1, use_container_width=True)
+    
+    with col2:
+        region_stats = panel_data.groupby("region")["Y_married"].mean().reset_index()
+        fig2 = px.bar(region_stats, x="region", y="Y_married",
+                     title="Tỷ lệ kết hôn theo vùng",
+                     color="region",
+                     color_discrete_sequence=[THEME["success"], THEME["warning"], THEME["error"]])
+        fig2.update_layout(**create_material_chart_layout(), height=300, showlegend=False)
+        st.plotly_chart(fig2, use_container_width=True)
+    
+    with col3:
+        age_stats = panel_data.groupby("age_group")["Y_married"].mean().reset_index()
+        fig3 = px.bar(age_stats, x="age_group", y="Y_married",
+                     title="Tỷ lệ kết hôn theo nhóm tuổi",
+                     color="age_group",
+                     color_discrete_sequence=[THEME["info"], THEME["primary"], THEME["success"]])
+        fig3.update_layout(**create_material_chart_layout(), height=300, showlegend=False)
+        st.plotly_chart(fig3, use_container_width=True)
+    
     st.markdown("---")
     
     col1, col2, col3 = st.columns([1, 2, 1])
