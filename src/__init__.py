@@ -1,9 +1,9 @@
 # =============================================================================
-# ĐỒ ÁN: Áp dụng Cây quyết định và Naive Bayes phân tích xu hướng kết hôn, 
-#        sinh con của giới trẻ Việt Nam (18–35)
+# DO AN: Ap dung Cay quyet dinh va Naive Bayes phan tich xu huong ket hon
+#        cua gioi tre Viet Nam (18-35)
 # =============================================================================
 # File: __init__.py
-# Mô tả: Package initialization
+# Mo ta: Package initialization
 # =============================================================================
 
 from .data_loader import (
