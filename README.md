@@ -1,102 +1,103 @@
-# Du bao Tinh trang Hon nhan Gioi tre Viet Nam
+# Dự báo Tình trạng Hôn nhân Giới trẻ Việt Nam
 
-## Mo ta
+## Mô tả
 
-Do an ap dung cac thuat toan **Machine Learning** (Decision Tree, Naive Bayes, Random Forest, Logistic Regression) de phan tich va du bao **tinh trang hon nhan (MARST)** cua gioi tre Viet Nam (18-35 tuoi) dua tren du lieu dieu tra dan so **IPUMS International** (Vietnam Census 2009, 2019).
+Đồ án áp dụng các thuật toán **Machine Learning** (Decision Tree, Naive Bayes, Random Forest, Logistic Regression) để phân tích và dự báo **tình trạng hôn nhân (MARST)** của giới trẻ Việt Nam (18-35 tuổi) dựa trên dữ liệu điều tra dân số **IPUMS International** (Vietnam Census 2009, 2019).
 
-### Bien muc tieu (Target Variable)
+### Biến mục tiêu (Target Variable)
 
-| Bien | Ten goc | Gia tri | Mo ta |
+| Biến | Tên gốc | Giá trị | Mô tả |
 |------|---------|---------|-------|
-| **Y_married** | MARST | `0` | Chua ket hon (Single/Never married) |
-| | | `1` | Da ket hon (Married/In union) |
+| **Y_married** | MARST | `0` | Chưa kết hôn (Single/Never married) |
+| | | `1` | Đã kết hôn (Married/In union) |
 
-> **Luu y**: Bien muc tieu duy nhat la **tinh trang hon nhan (MARST)**, khong su dung tuoi lam bien muc tieu.
+> **Lưu ý**: Biến mục tiêu duy nhất là **tình trạng hôn nhân (MARST)**, không sử dụng tuổi làm biến mục tiêu.
 
-## Tinh nang chinh
+## Tính năng chính
 
-- **Phan tich du lieu**: Truc quan hoa va kham pha du lieu dieu tra dan so
-- **Huan luyen mo hinh**: So sanh 5 thuat toan ML (Decision Tree Entropy, Decision Tree Gini, Naive Bayes, Random Forest, Logistic Regression)
-- **Du bao tinh trang hon nhan**: Du doan kha nang ket hon dua tren dac diem nhan khau hoc
-- **Luat IF-THEN**: Trich xuat luat tu cay quyet dinh de giai thich ket qua
-- **AI Assistant**: Tich hop Gemini AI de phan tich va dua ra khuyen nghi
+- **Phân tích dữ liệu**: Trực quan hóa và khám phá dữ liệu điều tra dân số
+- **Huấn luyện mô hình**: So sánh 5 thuật toán ML (Decision Tree Entropy, Decision Tree Gini, Naive Bayes, Random Forest, Logistic Regression)
+- **Dự báo tình trạng hôn nhân**: Dự đoán khả năng kết hôn dựa trên đặc điểm nhân khẩu học
+- **Luật IF-THEN**: Trích xuất luật từ cây quyết định để giải thích kết quả
+- **AI Assistant**: Tích hợp Gemini AI để phân tích và đưa ra khuyến nghị
 
-## Cac bien dau vao (Features)
+## Các biến đầu vào (Features)
 
-| Bien | Mo ta | Gia tri |
+| Biến | Mô tả | Giá trị |
 |------|-------|---------|
-| `year` | Nam dieu tra | 2009, 2019 |
-| `age` | Tuoi | 18-35 |
-| `age_group` | Nhom tuoi | 18-24, 25-29, 30-35 |
-| `sex` | Gioi tinh | Nam, Nu |
-| `education_level` | Trinh do hoc van | <=THPT, DH/CD+ |
-| `urban_rural` | Khu vuc sinh song | Do thi, Nong thon |
-| `region` | Vung mien | Bac, Trung, Nam |
-| `home_ownership` | So huu nha | 0 (Khong), 1 (Co) |
-| `living_area` | Dien tich nha o | m2 |
-| `living_area_level` | Muc dien tich nha o | Nho, Trung binh, Kha, Rong |
-| `household_size` | Quy mo ho gia dinh | So nguoi |
-| `household_size_group` | Nhom quy mo ho | 1-2, 3-4, 5-6, >6 nguoi |
+| `year` | Năm điều tra | 2009, 2019 |
+| `age` | Tuổi | 18-35 |
+| `age_group` | Nhóm tuổi | 18-24, 25-29, 30-35 |
+| `sex` | Giới tính | Nam, Nữ |
+| `education_level` | Trình độ học vấn | ≤THPT, ĐH/CĐ+ |
+| `urban_rural` | Khu vực sinh sống | Đô thị, Nông thôn |
+| `region` | Vùng miền | Bắc, Trung, Nam |
+| `home_ownership` | Sở hữu nhà | 0 (Không), 1 (Có) |
+| `living_area` | Diện tích nhà ở | m² |
+| `living_area_level` | Mức diện tích nhà ở | Nhỏ, Trung bình, Khá, Rộng |
+| `household_size` | Quy mô hộ gia đình | Số người |
+| `household_size_group` | Nhóm quy mô hộ | 1-2, 3-4, 5-6, >6 người |
 
-## Nguon du lieu
+## Nguồn dữ liệu
 
-| File | Mo ta | Nguon |
+| File | Mô tả | Nguồn |
 |------|-------|-------|
-| `ipumsi_data.csv` | Du lieu dieu tra dan so goc | [IPUMS International](https://international.ipums.org/) |
-| `ipums_processed.csv` | Du lieu da tien xu ly (6,128,957 ban ghi) | Tu tao |
-| `panel_microdata.csv` | Du lieu panel theo thoi gian | Tu tao |
+| `ipumsi_data.csv` | Dữ liệu điều tra dân số gốc | [IPUMS International](https://international.ipums.org/) |
+| `ipums_processed.csv` | Dữ liệu đã tiền xử lý (6,128,957 bản ghi) | Tự tạo |
 
-> **Tai du lieu**: Cac file du lieu lon can tai tu [IPUMS International](https://international.ipums.org/).
+> **Tải dữ liệu**: Các file dữ liệu lớn cần tải từ [IPUMS International](https://international.ipums.org/).
 
-## Cau truc thu muc
+## Cấu trúc thư mục
 
 ```
 data-mining/
-|-- app_panel.py              # Ung dung Streamlit chinh
-|-- requirements.txt          # Dependencies
-|-- README.md                 # Huong dan nay
-|-- .env.example              # Mau cau hinh API key
-|
-|-- data/                     # Du lieu
-|   |-- ipumsi_data.csv          # Du lieu IPUMS (khong upload GitHub)
-|   |-- ipums_processed.csv      # Du lieu da xu ly
-|   |-- panel_microdata.csv      # Du lieu panel
-|   |-- clean-data.docx          # Tai lieu mo ta du lieu
-|   +-- CTDA.docx                # Chu thich du an
-|
-|-- models/                   # Mo hinh da huan luyen
-|   |-- decision_tree_entropy_ipums.pkl
-|   |-- decision_tree_gini_ipums.pkl
-|   |-- naive_bayes_ipums.pkl
-|   |-- random_forest_ipums.pkl
-|   |-- logistic_regression_ipums.pkl
-|   +-- feature_names_ipums.pkl
-|
-|-- outputs/                  # Ket qua dau ra
-|   |-- figures/                 # Bieu do
-|   |-- model_comparison_ipums.csv
-|   |-- feature_importance_decision_tree_entropy.csv
-|   |-- feature_importance_decision_tree_gini.csv
-|   |-- feature_importance_random_forest.csv
-|   +-- feature_importance_logistic_regression.csv
-|
-|-- src/                      # Ma nguon
-|   |-- ipums_data_processor.py  # Xu ly du lieu IPUMS
-|   |-- train_marriage_model.py  # Huan luyen cac mo hinh
-|   |-- decision_tree_model.py   # Mo hinh Decision Tree
-|   |-- naive_bayes_model.py     # Mo hinh Naive Bayes
-|   |-- visualization.py         # Visualization
-|   +-- ...
-|
-|-- notebooks/                # Jupyter notebooks
-|   |-- analysis.ipynb           # Phan tich du lieu
-|   +-- model_comparison.ipynb   # So sanh mo hinh
-|
-+-- docs/                     # Tai lieu
-    +-- VARIABLES_DESIGN.md      # Thiet ke bien
+├── app_panel.py              # Ứng dụng Streamlit chính
+├── requirements.txt          # Dependencies
+├── README.md                 # Hướng dẫn này
+├── .env.example              # Mẫu cấu hình API key
+│
+├── data/                     # Dữ liệu
+│   ├── ipumsi_data.csv          # Dữ liệu IPUMS gốc
+│   ├── ipums_processed.csv      # Dữ liệu đã xử lý
+│   ├── clean-data.docx          # Tài liệu mô tả dữ liệu
+│   └── CTDA.docx                # Chú thích đồ án
+│
+├── models/                   # Mô hình đã huấn luyện (6 files)
+│   ├── decision_tree_entropy_ipums.pkl
+│   ├── decision_tree_gini_ipums.pkl
+│   ├── naive_bayes_ipums.pkl
+│   ├── random_forest_ipums.pkl
+│   ├── logistic_regression_ipums.pkl
+│   └── feature_names_ipums.pkl
+│
+├── outputs/                  # Kết quả đầu ra
+│   ├── figures/                 # Biểu đồ
+│   ├── model_comparison_ipums.csv
+│   ├── feature_importance_decision_tree_entropy.csv
+│   ├── feature_importance_decision_tree_gini.csv
+│   ├── feature_importance_random_forest.csv
+│   └── feature_importance_logistic_regression.csv
+│
+├── src/                      # Mã nguồn (9 files)
+│   ├── __init__.py              # Package initialization
+│   ├── data_loader.py           # Load dữ liệu
+│   ├── data_processor.py        # Xử lý dữ liệu
+│   ├── preprocessing.py         # Tiền xử lý, encoding
+│   ├── ipums_data_processor.py  # Xử lý dữ liệu IPUMS
+│   ├── train_marriage_model.py  # Huấn luyện các mô hình
+│   ├── decision_tree_model.py   # Mô hình Decision Tree
+│   ├── naive_bayes_model.py     # Mô hình Naive Bayes
+│   └── visualization.py         # Visualization
+│
+├── notebooks/                # Jupyter notebooks
+│   ├── analysis.ipynb           # Phân tích dữ liệu
+│   └── model_comparison.ipynb   # So sánh mô hình
+│
+└── docs/                     # Tài liệu
+    └── VARIABLES_DESIGN.md      # Thiết kế biến
 ```
 
-## Cai dat
+## Cài đặt
 
 ### 1. Clone repository
 
@@ -105,117 +106,115 @@ git clone https://github.com/DungNhiedu/data-mining.git
 cd data-mining
 ```
 
-### 2. Tao moi truong ao
+### 2. Tạo môi trường ảo
 
 ```bash
-# Tao virtual environment
+# Tạo virtual environment
 python -m venv .venv
 
-# Kich hoat (macOS/Linux)
+# Kích hoạt (macOS/Linux)
 source .venv/bin/activate
 
-# Kich hoat (Windows)
+# Kích hoạt (Windows)
 .venv\Scripts\activate
 ```
 
-### 3. Cai dat dependencies
+### 3. Cài đặt dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Cau hinh API Key (tuy chon)
+### 4. Cấu hình API Key (tùy chọn)
 
-De su dung tinh nang AI Assistant voi Gemini:
+Để sử dụng tính năng AI Assistant với Gemini:
 
 ```bash
-# Tao file .env tu mau
+# Tạo file .env từ mẫu
 cp .env.example .env
 
-# Chinh sua file .env va them API key
+# Chỉnh sửa file .env và thêm API key
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-Lay API key tai: https://makersuite.google.com/app/apikey
+Lấy API key tại: https://makersuite.google.com/app/apikey
 
-## Su dung
+## Sử dụng
 
-### Chay ung dung Streamlit
+### Chạy ứng dụng Streamlit
 
 ```bash
 streamlit run app_panel.py
 ```
 
-Ung dung se mo tai: http://localhost:8501
+Ứng dụng sẽ mở tại: http://localhost:8501
 
-### Cac tab trong ung dung
+### Các tab trong ứng dụng
 
-| Tab | Chuc nang |
+| Tab | Chức năng |
 |-----|-----------|
-| **Du bao ca nhan** | Du doan tinh trang hon nhan tu thong tin ca nhan |
-| **Phan tich du lieu** | Xem thong ke va phan bo du lieu IPUMS |
-| **Luat IF-THEN** | Xem cac luat duoc trich xuat tu Decision Tree |
-| **So sanh mo hinh** | So sanh hieu suat 5 thuat toan ML |
-| **Yeu to anh huong** | Phan tich Feature Importance tu cac mo hinh |
-| **Du bao boi AI** | Chat voi Gemini AI de phan tich xu huong |
+| **Dự báo cá nhân** | Dự đoán tình trạng hôn nhân từ thông tin cá nhân |
+| **Phân tích dữ liệu** | Xem thống kê và phân bố dữ liệu IPUMS |
+| **Luật IF-THEN** | Xem các luật được trích xuất từ Decision Tree |
+| **So sánh mô hình** | So sánh hiệu suất 5 thuật toán ML |
+| **Yếu tố ảnh hưởng** | Phân tích Feature Importance từ các mô hình |
+| **Dự báo bởi AI** | Chat với Gemini AI để phân tích xu hướng |
 
-### Chay Pipeline tu command line
+### Chạy Pipeline từ command line
 
 ```bash
-# Xu ly du lieu IPUMS
+# Xử lý dữ liệu IPUMS
 python src/ipums_data_processor.py
 
-# Huan luyen mo hinh
+# Huấn luyện mô hình
 python src/train_marriage_model.py
 ```
 
-## Ket qua
+## Kết quả
 
-### Hieu suat mo hinh (tren du lieu IPUMS - 6,128,957 ban ghi)
+### Hiệu suất mô hình (trên dữ liệu IPUMS - 6,128,957 bản ghi)
 
-| Mo hinh | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
+| Mô hình | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
 |---------|:--------:|:---------:|:------:|:--------:|:-------:|
 | **Decision Tree (Entropy)** | 82.40% | 84.05% | 90.52% | 87.17% | 88.87% |
 | **Decision Tree (Gini)** | 82.43% | 84.10% | 90.48% | 87.18% | 88.89% |
-| **Naive Bayes (Gaussian)** | 77.21% | 84.14% | 80.68% | 82.37% | 81.61% |
+| **Naive Bayes** | 77.21% | 84.14% | 80.68% | 82.37% | 81.61% |
 | **Random Forest** | 82.17% | 83.91% | 90.31% | 86.99% | 88.71% |
 | **Logistic Regression** | 81.27% | 83.95% | 88.55% | 86.19% | 86.90% |
 
-> **Ghi chu**: Naive Bayes su dung StandardScaler truoc GaussianNB de calibrate xac suat tot hon.
+### Các biến quan trọng (Feature Importance)
 
-### Cac bien quan trong (Feature Importance)
+Dựa trên phân tích từ các mô hình:
 
-Dua tren phan tich tu ca 5 mo hinh:
+1. **Tuổi (age)** - Yếu tố quan trọng nhất
+2. **Quy mô hộ gia đình (household_size)** - Top 2
+3. **Nhóm tuổi 18-24** - Nhóm có tỷ lệ kết hôn thấp nhất
+4. **Giới tính** - Nữ kết hôn cao hơn Nam
+5. **Khu vực (Đô thị/Nông thôn)**
+6. **Trình độ học vấn**
+7. **Vùng miền**
+8. **Sở hữu nhà**
 
-1. **Tuoi (age)** - Yeu to quan trong nhat (54.4% DT-Entropy, 31% RF)
-2. **Quy mo ho gia dinh (household_size)** - Top 2 (18-25% o tat ca mo hinh)
-3. **Nhom tuoi 18-24** - Nhom co ty le ket hon thap nhat (46.9% DT-Gini)
-4. **Gioi tinh** - Nu ket hon 68% > Nam 64%
-5. **Khu vuc (Do thi/Nong thon)** - Do thi 69% > Nong thon 63%
-6. **Trinh do hoc van** - DH/CD+ 67% > <=THPT 65%
-7. **Vung mien** - Bac 68% > Nam 66% > Trung 63%
-8. **So huu nha** - Co nha 67% vs Khong co 65%
+## Công nghệ sử dụng
 
-## Cong nghe su dung
-
-| Cong nghe | Muc dich |
+| Công nghệ | Mục đích |
 |-----------|----------|
-| **Python 3.9+** | Ngon ngu lap trinh chinh |
+| **Python 3.9+** | Ngôn ngữ lập trình chính |
 | **Streamlit** | Web framework |
 | **Scikit-learn** | Machine Learning algorithms |
-| **Pandas va NumPy** | Xu ly du lieu |
-| **Plotly va Matplotlib** | Visualization |
+| **Pandas, NumPy** | Xử lý dữ liệu |
+| **Plotly, Matplotlib** | Visualization |
 | **Google Generative AI** | Gemini AI integration |
 
-## Nhom thuc hien
+## Nhóm thực hiện
 
-- **Mon hoc**: Khai thac du lieu va truyen thong xa hoi
-- **Truong**: [Ten truong]
-- **Giang vien huong dan**: [Ten giang vien]
+- **Môn học**: Khai thác dữ liệu và truyền thông xã hội
+- **Trường**: Đại học Tôn Đức Thắng
+- **Giảng viên hướng dẫn**: ThS. Trần Thị Thanh Sang
 
 ## Links
 
-| Tai nguyen | URL |
+| Tài nguyên | URL |
 |------------|-----|
 | Repository | https://github.com/DungNhiedu/data-mining |
 | IPUMS International | https://international.ipums.org/ |
@@ -224,8 +223,8 @@ Dua tren phan tich tu ca 5 mo hinh:
 
 ## License
 
-MIT License - Xem file [LICENSE](LICENSE) de biet them chi tiet.
+MIT License
 
 ---
 
-**Neu project huu ich, hay cho mot star!**
+**Nếu project hữu ích, hãy cho một ⭐ star!**
