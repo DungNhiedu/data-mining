@@ -770,9 +770,7 @@ CHART_COLORS = [
     "#5fe9ce",  # Success Light
 ]
 
-# Gemini API Key - Đọc từ biến môi trường hoặc file .env
-# Để sử dụng: tạo file .env với nội dung GEMINI_API_KEY=your_api_key_here
-# Hoặc set biến môi trường: export GEMINI_API_KEY=your_api_key_here
+
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 # Khởi tạo Gemini client
@@ -812,7 +810,7 @@ def load_models():
         "Naive Bayes": "models/naive_bayes_panel.pkl"
     }
     
-    # Thử load mô hình IPUMS trước
+    # Thử load mô hình IPUMS
     for name, path in ipums_model_files.items():
         if os.path.exists(path):
             try:
@@ -1048,7 +1046,6 @@ DỮ LIỆU THỐNG KÊ THỰC TẾ TỪ ĐIỀU TRA DÂN SỐ VIỆT NAM (IPUMS
     return summary
 
 def main():
-    # Sidebar với Material Kit React Design
     with st.sidebar:
         # Logo và Brand
         st.markdown("""
@@ -1169,7 +1166,7 @@ def main():
             # Tuổi - slider thay vì nhóm tuổi
             age = st.slider("Tuổi", min_value=18, max_value=35, value=26, key="age_slider")
             
-            # Nhóm tuổi (tự tính)
+            # Nhóm tuổi
             if age <= 24:
                 age_group = "18-24"
             elif age <= 29:
@@ -1241,7 +1238,6 @@ def main():
             if models and model_choice in models:
                 model = models[model_choice]
                 
-                # Chuẩn bị input theo format của mô hình IPUMS
                 # Tạo DataFrame với tất cả các features đã one-hot encoded
                 input_dict = {
                     'age': age,
@@ -1281,7 +1277,7 @@ def main():
                 # Tạo DataFrame
                 input_data = pd.DataFrame([input_dict])
                 
-                # Đảm bảo có đủ các cột như model cần
+                # Đảm bảo có đủ các cột
                 if feature_names:
                     for col in feature_names:
                         if col not in input_data.columns:
@@ -1372,7 +1368,7 @@ def main():
         render_header("Phân tích dữ liệu Điều tra Dân số Việt Nam (IPUMS)")
         
         if panel_data is not None:
-            # Tổng quan - Material Kit React Style Stats Cards
+            # Tổng quan
             col1, col2, col3, col4 = st.columns(4)
             
             with col1:
