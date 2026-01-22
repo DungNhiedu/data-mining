@@ -210,7 +210,6 @@ Dựa trên phân tích từ các mô hình:
 
 - **Môn học**: Khai thác dữ liệu và truyền thông xã hội
 - **Trường**:
-- **Giảng viên hướng dẫn**: 
 
 ## Links
 
