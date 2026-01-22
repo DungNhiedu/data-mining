@@ -209,8 +209,8 @@ Dựa trên phân tích từ các mô hình:
 ## Nhóm thực hiện
 
 - **Môn học**: Khai thác dữ liệu và truyền thông xã hội
-- **Trường**: Đại học Tôn Đức Thắng
-- **Giảng viên hướng dẫn**: ThS. Trần Thị Thanh Sang
+- **Trường**:
+- **Giảng viên hướng dẫn**: 
 
 ## Links
 
@@ -220,11 +220,3 @@ Dựa trên phân tích từ các mô hình:
 | IPUMS International | https://international.ipums.org/ |
 | Streamlit Docs | https://docs.streamlit.io/ |
 | Scikit-learn Docs | https://scikit-learn.org/stable/ |
-
-## License
-
-MIT License
-
----
-
-**Nếu project hữu ích, hãy cho một ⭐ star!**
