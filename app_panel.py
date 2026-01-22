@@ -108,7 +108,7 @@ st.markdown("""
         
         /* Text Colors */
         --text-primary: #f0f4f8;
-        --text-secondary: #9fa6ad;
+        --text_secondary: #9fa6ad;
         --text-disabled: #555e68;
     }
     
@@ -147,7 +147,7 @@ st.markdown("""
     }
     
     [data-testid="stSidebar"] .stMarkdown {
-        color: var(--text-secondary);
+        color: var(--text_secondary);
     }
     
     [data-testid="stSidebar"] > div:first-child {
@@ -251,7 +251,7 @@ st.markdown("""
     
     .metric-label {
         font-size: 0.85em;
-        color: var(--text-secondary);
+        color: var(--text_secondary);
         margin-top: 12px;
         font-weight: 600;
         text-transform: uppercase;
@@ -413,7 +413,7 @@ st.markdown("""
     .stTabs [data-baseweb="tab"] {
         background: transparent;
         border-radius: 12px;
-        color: var(--text-secondary);
+        color: var(--text_secondary);
         font-weight: 500;
         padding: 14px 24px;
         transition: all 0.2s ease;
@@ -526,7 +526,7 @@ st.markdown("""
     }
     
     [data-testid="stMetricLabel"] {
-        color: var(--text-secondary);
+        color: var(--text_secondary);
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -693,6 +693,32 @@ st.markdown("""
     
     .ai-result-box li {
         margin-bottom: 8px;
+    }
+    
+    /* ========================================
+       OPTION TEXT COLOR - SELECTBOX, RADIO, DROPDOWN
+       ======================================== */
+    .stSelectbox [data-baseweb="select"] .css-1n76uvr-option,
+    .stSelectbox [data-baseweb="select"] .css-1n76uvr-singleValue,
+    .stSelectbox [data-baseweb="select"] .css-1n76uvr-input,
+    .stSelectbox .css-1n76uvr-control,
+    .stSelectbox .css-1n76uvr-placeholder,
+    .stSelectbox .css-1n76uvr-value-container,
+    .stSelectbox .css-1n76uvr-indicatorContainer,
+    .stSelectbox .css-1n76uvr-menu,
+    .stSelectbox .css-1n76uvr-menu-list,
+    .stSelectbox .css-1n76uvr-option {
+        color: #fff !important;
+        background: transparent !important;
+    }
+    .stRadio [role="radiogroup"] label,
+    .stRadio [role="radiogroup"] span {
+        color: #fff !important;
+    }
+    
+    /* Chỉnh màu text của các option trong selectbox, radio thành trắng */
+    .stSelectbox div[role="option"], .stSelectbox span, .stSelectbox div, .stRadio label, .stRadio div[role="radio"], .stRadio span {
+        color: #ffffff !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -1463,6 +1489,7 @@ def main():
                         barmode="group",
                         color_discrete_sequence=[THEME["primary"], THEME["warning"]]
                     )
+                    fig4.update_layout(legend_title_text="")  # Ẩn legend title
                 else:
                     urban_stats = panel_data.groupby("urban_rural")["Y_married"].mean().reset_index()
                     fig4 = px.bar(
@@ -1471,6 +1498,7 @@ def main():
                         color="urban_rural",
                         color_discrete_sequence=[THEME["primary"], THEME["warning"]]
                     )
+                    fig4.update_layout(legend_title_text="")  # Ẩn legend title
                 fig4.update_layout(**create_material_chart_layout())
                 fig4.update_traces(marker_line_width=0, marker_cornerradius=6)
                 st.plotly_chart(fig4, use_container_width=True)
@@ -2177,5 +2205,6 @@ def _display_reference_data(panel_data):
             st.caption("Material Kit React (Devias)")
         
         st.markdown(" ")
+        
 if __name__ == "__main__":
     main()

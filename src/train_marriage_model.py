@@ -233,8 +233,7 @@ def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
     # Load dữ liệu
-    # Sử dụng sample để chạy nhanh hơn (có thể bỏ sample_size để dùng toàn bộ)
-    df = load_data(DATA_PATH, sample_size=500000)
+    df = load_data(DATA_PATH)
     
     # Chuẩn bị features
     X, y, feature_names = prepare_features(df)
