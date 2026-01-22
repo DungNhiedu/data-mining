@@ -1,23 +1,25 @@
 Feature,Importance
-age,0.5783952139611698
-household_size,0.20371180941711525
-urban_rural_Nông thôn,0.059673758601359116
-sex_Nữ,0.05243052246199393
-home_ownership,0.0246354392212872
-living_area,0.016866238659576524
-education_level_≤THPT,0.015614390011536696
-sex_Nam,0.014986299328162998
-household_size_group_1-2 người,0.014365489059322467
-education_level_ĐH/CĐ+,0.01421973081553961
-urban_rural_Đô thị,0.0032750531575162535
-age_group_30-35,0.001063382773433167
-household_size_group_3-4 người,0.0002774386869869677
-age_group_25-29,0.00017598601645020547
-living_area_level_Nhỏ,0.00011008212606851973
-living_area_level_Trung bình,9.228465012519771e-05
-living_area_level_Khá,8.5877100837269e-05
-household_size_group_5-6 người,2.10039515188792e-05
-age_group_18-24,0.0
-region_Bắc,0.0
+age_group_18-24,0.4691677561949582
+household_size,0.1877054816925359
+age,0.11731598303380959
+sex_Nam,0.06593496545242064
+household_size_group_1-2 người,0.045728325080586635
+sex_Nữ,0.03375118047086168
+living_area,0.015074038925306133
+urban_rural_Đô thị,0.014036202149985607
+education_level_ĐH/CĐ+,0.011211720342108555
+home_ownership,0.010782041860437602
+urban_rural_Nông thôn,0.009835314735275444
+region_Bắc,0.008672670470973436
+education_level_≤THPT,0.00566343666215474
+region_Nam,0.004143621903657577
+region_Trung,0.0007042621187352176
+age_group_30-35,9.36024100885876e-05
+household_size_group_3-4 người,8.228594713715553e-05
+age_group_25-29,4.670074821874062e-05
+household_size_group_5-6 người,3.630909813552991e-05
+living_area_level_Khá,8.51710670979891e-06
+living_area_level_Trung bình,5.583595903196532e-06
+living_area_level_Nhỏ,0.0
 living_area_level_Rộng,0.0
 household_size_group_>6 người,0.0

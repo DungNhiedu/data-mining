@@ -1,14 +1,14 @@
 # =============================================================================
-# HUẤN LUYỆN MÔ HÌNH DỰ BÁO KẾT HÔN - IPUMS DATA
+# HUAN LUYEN MO HINH DU BAO KET HON - IPUMS DATA
 # =============================================================================
 # File: train_marriage_model.py
-# Mô tả: Huấn luyện các mô hình ML dự báo TÌNH TRẠNG HÔN NHÂN
-#        sử dụng dữ liệu IPUMS International Vietnam Census
+# Mo ta: Huan luyen cac mo hinh ML du bao TINH TRANG HON NHAN
+#        su dung du lieu IPUMS International Vietnam Census
 #
-# BIẾN MỤC TIÊU (Target Variable):
-#   - Y_married (từ MARST): Tình trạng hôn nhân
-#     + 0 = Chưa kết hôn (Single/never married)
-#     + 1 = Đã kết hôn (Married/in union)
+# BIEN MUC TIEU (Target Variable):
+#   - Y_married (tu MARST): Tinh trang hon nhan
+#     + 0 = Chua ket hon (Single/never married)
+#     + 1 = Da ket hon (Married/in union)
 # =============================================================================
 
 import pandas as pd
@@ -34,13 +34,13 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # =============================================================================
-# CẤU HÌNH
+# CAU HINH
 # =============================================================================
 DATA_PATH = "data/ipums_processed.csv"
 MODEL_DIR = "models"
 OUTPUT_DIR = "outputs"
 
-# Các biến features cho model
+# Cac bien features cho model
 CATEGORICAL_FEATURES = [
     'age_group',
     'sex',
@@ -61,10 +61,10 @@ NUMERICAL_FEATURES = [
 TARGET = 'Y_married'
 
 # =============================================================================
-# LOAD VÀ CHUẨN BỊ DỮ LIỆU
+# LOAD VA CHUAN BI DU LIEU
 # =============================================================================
 def load_data(file_path: str, sample_size: int = None) -> pd.DataFrame:
-    """Load dữ liệu đã xử lý"""
+    """Load du lieu da xu ly"""
     print(f"Loading data from {file_path}...")
     
     if sample_size:
@@ -78,7 +78,7 @@ def load_data(file_path: str, sample_size: int = None) -> pd.DataFrame:
 
 def prepare_features(df: pd.DataFrame) -> tuple:
     """
-    Chuẩn bị features và target cho model
+    Chuan bi features va target cho model
     
     Returns:
     --------
@@ -88,7 +88,7 @@ def prepare_features(df: pd.DataFrame) -> tuple:
     """
     print("Preparing features...")
     
-    # Chọn features có trong data
+    # Chon features co trong data
     cat_features = [f for f in CATEGORICAL_FEATURES if f in df.columns]
     num_features = [f for f in NUMERICAL_FEATURES if f in df.columns]
     
@@ -115,10 +115,10 @@ def prepare_features(df: pd.DataFrame) -> tuple:
 
 def split_data_by_year(df: pd.DataFrame, test_year: int = 2019):
     """
-    Chia dữ liệu theo năm để đánh giá temporal validation
+    Chia du lieu theo nam de danh gia temporal validation
     
-    - Train: Năm trước (2009)
-    - Test: Năm sau (2019)
+    - Train: Nam truoc (2009)
+    - Test: Nam sau (2019)
     """
     train_df = df[df['year'] != test_year]
     test_df = df[df['year'] == test_year]
@@ -131,10 +131,10 @@ def split_data_by_year(df: pd.DataFrame, test_year: int = 2019):
 
 
 # =============================================================================
-# HUẤN LUYỆN MÔ HÌNH
+# HUAN LUYEN MO HINH
 # =============================================================================
 def train_decision_tree(X_train, y_train, criterion='entropy', max_depth=10):
-    """Huấn luyện Decision Tree"""
+    """Huan luyen Decision Tree"""
     model = DecisionTreeClassifier(
         criterion=criterion,
         max_depth=max_depth,
@@ -147,14 +147,27 @@ def train_decision_tree(X_train, y_train, criterion='entropy', max_depth=10):
 
 
 def train_naive_bayes(X_train, y_train):
-    """Huấn luyện Naive Bayes"""
-    model = GaussianNB()
-    model.fit(X_train, y_train)
-    return model
+    """
+    Huan luyen Naive Bayes voi StandardScaler
+    
+    GaussianNB gia dinh features co phan phoi chuan, nhung voi du lieu mixed 
+    (numeric + one-hot encoded), can scaling de cai thien calibration.
+    
+    Returns Pipeline: scaler + GaussianNB
+    """
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
+    
+    pipeline = Pipeline([
+        ('scaler', StandardScaler()),
+        ('nb', GaussianNB(var_smoothing=1e-9))  # var_smoothing để tránh variance=0
+    ])
+    pipeline.fit(X_train, y_train)
+    return pipeline
 
 
 def train_random_forest(X_train, y_train, n_estimators=100, max_depth=10):
-    """Huấn luyện Random Forest"""
+    """Huan luyen Random Forest"""
     model = RandomForestClassifier(
         n_estimators=n_estimators,
         max_depth=max_depth,
@@ -168,7 +181,7 @@ def train_random_forest(X_train, y_train, n_estimators=100, max_depth=10):
 
 
 def train_logistic_regression(X_train, y_train):
-    """Huấn luyện Logistic Regression"""
+    """Huan luyen Logistic Regression"""
     model = LogisticRegression(
         max_iter=1000,
         random_state=42,
@@ -179,10 +192,10 @@ def train_logistic_regression(X_train, y_train):
 
 
 # =============================================================================
-# ĐÁNH GIÁ MÔ HÌNH
+# DANH GIA MO HINH
 # =============================================================================
 def evaluate_model(model, X_test, y_test, model_name: str) -> dict:
-    """Đánh giá model và trả về metrics"""
+    """Danh gia model va tra ve metrics"""
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)[:, 1] if hasattr(model, 'predict_proba') else y_pred
     
@@ -208,7 +221,7 @@ def evaluate_model(model, X_test, y_test, model_name: str) -> dict:
 
 
 def get_feature_importance(model, feature_names: list, model_name: str) -> pd.DataFrame:
-    """Lấy feature importance từ model"""
+    """Lay feature importance tu model"""
     if hasattr(model, 'feature_importances_'):
         importance = model.feature_importances_
     elif hasattr(model, 'coef_'):
@@ -228,14 +241,14 @@ def get_feature_importance(model, feature_names: list, model_name: str) -> pd.Da
 # MAIN TRAINING PIPELINE
 # =============================================================================
 def main():
-    # Tạo thư mục output nếu chưa có
+    # Tao thu muc output neu chua co
     os.makedirs(MODEL_DIR, exist_ok=True)
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
-    # Load dữ liệu
+    # Load du lieu
     df = load_data(DATA_PATH)
     
-    # Chuẩn bị features
+    # Chuan bi features
     X, y, feature_names = prepare_features(df)
     
     # Chia train/test theo random split (80/20)
@@ -249,7 +262,7 @@ def main():
     print(f"Test marriage rate: {y_test.mean():.2%}")
     
     # =========================================================================
-    # HUẤN LUYỆN CÁC MÔ HÌNH
+    # HUAN LUYEN CAC MO HINH
     # =========================================================================
     results = []
     models = {}
@@ -300,10 +313,10 @@ def main():
     models['logistic_regression'] = lr
     
     # =========================================================================
-    # LƯU KẾT QUẢ
+    # LUU KET QUA
     # =========================================================================
     
-    # Lưu comparison table
+    # Luu comparison table
     results_df = pd.DataFrame(results)
     results_df.to_csv(f"{OUTPUT_DIR}/model_comparison_ipums.csv", index=False)
     print(f"\nSaved model comparison to {OUTPUT_DIR}/model_comparison_ipums.csv")
@@ -313,7 +326,7 @@ def main():
     print("="*60)
     print(results_df.to_string(index=False))
     
-    # Lưu feature importance
+    # Luu feature importance
     for name, model in models.items():
         importance_df = get_feature_importance(model, feature_names, name)
         if importance_df is not None:
@@ -321,7 +334,7 @@ def main():
             print(f"\nTop 10 features for {name}:")
             print(importance_df.head(10).to_string(index=False))
     
-    # Lưu models
+    # Luu models
     for name, model in models.items():
         model_path = f"{MODEL_DIR}/{name}_ipums.pkl"
         joblib.dump(model, model_path)

@@ -1,13 +1,13 @@
 # =============================================================================
-# ĐỒ ÁN: Dự báo Tình trạng Hôn nhân của Giới trẻ Việt Nam (18–35)
+# DO AN: Du bao Tinh trang Hon nhan cua Gioi tre Viet Nam (18-35)
 # =============================================================================
 # File: decision_tree_model.py
-# Mô tả: Mô hình Cây quyết định (Decision Tree) với Entropy và Gini
+# Mo ta: Mo hinh Cay quyet dinh (Decision Tree) voi Entropy va Gini
 #
-# BIẾN MỤC TIÊU (Target Variable):
-#   - Y_married (từ MARST): Tình trạng hôn nhân
-#     + 0 = Chưa kết hôn (Single/never married)
-#     + 1 = Đã kết hôn (Married/in union)
+# BIEN MUC TIEU (Target Variable):
+#   - Y_married (tu MARST): Tinh trang hon nhan
+#     + 0 = Chua ket hon (Single/never married)
+#     + 1 = Da ket hon (Married/in union)
 # =============================================================================
 
 import numpy as np
@@ -33,28 +33,28 @@ except ImportError:
 
 class DecisionTreeModel:
     """
-    Class quản lý mô hình Decision Tree cho dữ liệu thực
+    Class quan ly mo hinh Decision Tree cho du lieu thuc
     """
     
     def __init__(self, criterion="entropy", max_depth=5, min_samples_split=10, 
                  class_weight="balanced", random_state=2026, features=None):
         """
-        Khởi tạo mô hình Decision Tree
+        Khoi tao mo hinh Decision Tree
         
         Parameters:
         -----------
         criterion : str
-            Tiêu chí chia ('entropy' hoặc 'gini')
+            Tieu chi chia ('entropy' hoac 'gini')
         max_depth : int
-            Độ sâu tối đa của cây
+            Do sau toi da cua cay
         min_samples_split : int
-            Số mẫu tối thiểu để chia node
+            So mau toi thieu de chia node
         class_weight : str or dict
-            Trọng số các lớp
+            Trong so cac lop
         random_state : int
-            Seed để tái tạo kết quả
+            Seed de tai tao ket qua
         features : list
-            Danh sách features (mặc định FEATURES_REAL)
+            Danh sach features (mac dinh FEATURES_REAL)
         """
         self.criterion = criterion
         self.max_depth = max_depth

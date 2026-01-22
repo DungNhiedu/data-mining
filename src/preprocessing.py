@@ -1,9 +1,9 @@
 # =============================================================================
-# ĐỒ ÁN: Áp dụng Cây quyết định và Naive Bayes phân tích xu hướng kết hôn, 
-#        sinh con của giới trẻ Việt Nam (18–35)
+# DO AN: Ap dung Cay quyet dinh va Naive Bayes phan tich xu huong ket hon, 
+#        sinh con cua gioi tre Viet Nam (18-35)
 # =============================================================================
 # File: preprocessing.py
-# Mô tả: Tiền xử lý dữ liệu - Mã hóa, chia train/test
+# Mo ta: Tien xu ly du lieu - Ma hoa, chia train/test
 # =============================================================================
 
 import pandas as pd

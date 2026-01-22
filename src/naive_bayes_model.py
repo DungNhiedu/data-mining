@@ -1,13 +1,13 @@
 # =============================================================================
-# ĐỒ ÁN: Dự báo Tình trạng Hôn nhân của Giới trẻ Việt Nam (18–35)
+# DO AN: Du bao Tinh trang Hon nhan cua Gioi tre Viet Nam (18-35)
 # =============================================================================
 # File: naive_bayes_model.py
-# Mô tả: Mô hình Naive Bayes (CategoricalNB/GaussianNB) với Laplace smoothing
+# Mo ta: Mo hinh Naive Bayes (CategoricalNB/GaussianNB) voi Laplace smoothing
 #
-# BIẾN MỤC TIÊU (Target Variable):
-#   - Y_married (từ MARST): Tình trạng hôn nhân
-#     + 0 = Chưa kết hôn (Single/never married)
-#     + 1 = Đã kết hôn (Married/in union)
+# BIEN MUC TIEU (Target Variable):
+#   - Y_married (tu MARST): Tinh trang hon nhan
+#     + 0 = Chua ket hon (Single/never married)
+#     + 1 = Da ket hon (Married/in union)
 # =============================================================================
 
 import numpy as np
@@ -34,21 +34,21 @@ except ImportError:
 
 class NaiveBayesModel:
     """
-    Class quản lý mô hình Naive Bayes cho dữ liệu thực
+    Class quan ly mo hinh Naive Bayes cho du lieu thuc
     """
     
     def __init__(self, alpha=1.0, model_type='gaussian', features=None, var_smoothing=1e-9):
         """
-        Khởi tạo mô hình Naive Bayes
+        Khoi tao mo hinh Naive Bayes
         
         Parameters:
         -----------
         alpha : float
-            Tham số Laplace smoothing cho CategoricalNB (mặc định 1.0)
+            Tham so Laplace smoothing cho CategoricalNB (mac dinh 1.0)
         model_type : str
-            Loại model ('categorical' hoặc 'gaussian')
+            Loai model ('categorical' hoac 'gaussian')
         features : list
-            Danh sách features (mặc định FEATURES_REAL)
+            Danh sach features (mac dinh FEATURES_REAL)
         var_smoothing : float
             Variance smoothing cho GaussianNB
         """
@@ -152,7 +152,7 @@ class NaiveBayesModel:
     
     def find_best_threshold(self, X_val, y_val):
         """
-        Tìm threshold tốt nhất dựa trên F1-score
+        Tim threshold tot nhat dua tren F1-score
         """
         y_proba = self.predict_proba(X_val)[:, 1]
         
@@ -172,11 +172,11 @@ class NaiveBayesModel:
     
     def cross_validate(self, X, y, cv=5):
         """
-        Đánh giá mô hình bằng cross-validation
+        Danh gia mo hinh bang cross-validation
         
         Returns:
         --------
-        dict: Kết quả cross-validation
+        dict: Ket qua cross-validation
         """
         scores = cross_val_score(self.pipeline, X, y, cv=cv, scoring='accuracy')
         f1_scores = cross_val_score(self.pipeline, X, y, cv=cv, scoring='f1')
@@ -191,7 +191,7 @@ class NaiveBayesModel:
     
     def predict_regions(self, regions_df):
         """
-        Dự đoán xu hướng cho các vùng/tỉnh
+        Du doan xu huong cho cac vung/tinh
         """
         proba = self.predict_proba(regions_df)[:, 1]
         result = regions_df.copy()
@@ -201,7 +201,7 @@ class NaiveBayesModel:
     
     def get_class_info(self):
         """
-        Lấy thông tin về class distribution
+        Lay thong tin ve class distribution
         """
         return {
             'class_counts': self.class_counts_,
@@ -211,10 +211,10 @@ class NaiveBayesModel:
     
     def plot_confusion_matrix(self, y_test, y_pred, class_names=None):
         """
-        Vẽ ma trận nhầm lẫn
+        Ve ma tran nham lan
         """
         if class_names is None:
-            class_names = ["Chưa kết hôn", "Đã kết hôn"]
+            class_names = ["Chua ket hon", "Da ket hon"]
             
         cm = confusion_matrix(y_test, y_pred)
         
@@ -235,15 +235,15 @@ class NaiveBayesModel:
     
     def plot_probability_distribution(self, X_test, y_test):
         """
-        Vẽ phân phối xác suất dự đoán
+        Ve phan phoi xac suat du doan
         """
         y_proba = self.predict_proba(X_test)[:, 1]
         
         plt.figure(figsize=(10, 6))
-        plt.hist(y_proba[y_test == 0], bins=20, alpha=0.5, label='Chưa kết hôn (actual)', color='red')
-        plt.hist(y_proba[y_test == 1], bins=20, alpha=0.5, label='Đã kết hôn (actual)', color='green')
+        plt.hist(y_proba[y_test == 0], bins=20, alpha=0.5, label='Chua ket hon (actual)', color='red')
+        plt.hist(y_proba[y_test == 1], bins=20, alpha=0.5, label='Da ket hon (actual)', color='green')
         plt.axvline(x=0.5, color='black', linestyle='--', label='Threshold=0.5')
-        plt.xlabel('Predicted Probability of Đã kết hôn')
+        plt.xlabel('Predicted Probability of Da ket hon')
         plt.ylabel('Frequency')
         plt.title('Probability Distribution by Actual Class')
         plt.legend()

@@ -1,130 +1,130 @@
-# THIẾT KẾ BIẾN DỰ BÁO XÁC SUẤT KẾT HÔN
+# THIET KE BIEN DU BAO XAC SUAT KET HON
 
-## Nguồn dữ liệu: IPUMS International - Vietnam Census (2009 & 2019)
+## Nguon du lieu: IPUMS International - Vietnam Census (2009 & 2019)
 
-Dữ liệu được lấy từ IPUMS International (Minnesota Population Center), bao gồm:
-- **Tổng điều tra dân số Việt Nam 2009**
-- **Tổng điều tra dân số Việt Nam 2019**
+Du lieu duoc lay tu IPUMS International (Minnesota Population Center), bao gom:
+- **Tong dieu tra dan so Viet Nam 2009**
+- **Tong dieu tra dan so Viet Nam 2019**
 
-Tổng số bản ghi sau xử lý: **~6.1 triệu** người trong độ tuổi 18-35
-
----
-
-## 1. BIẾN MỤC TIÊU (Target Variable)
-
-| Biến | Mô tả | Giá trị | Nguồn IPUMS |
-|------|-------|---------|-------------|
-| `Y_married` | Tình trạng hôn nhân | 0 = Chưa kết hôn, 1 = Đã kết hôn | MARST |
+Tong so ban ghi sau xu ly: **~6.1 trieu** nguoi trong do tuoi 18-35
 
 ---
 
-## 2. BIẾN ĐẦU VÀO (Features)
+## 1. BIEN MUC TIEU (Target Variable)
 
-### 2.1. Thông tin nhân khẩu học
-
-| Biến | Mô tả | Giá trị | Nguồn IPUMS |
+| Bien | Mo ta | Gia tri | Nguon IPUMS |
 |------|-------|---------|-------------|
-| `age` | Tuổi | 18-35 | AGE |
-| `age_group` | Nhóm tuổi | "18-24", "25-29", "30-35" | Tính từ AGE |
-| `sex` | Giới tính | "Nam", "Nữ" | SEX (1=Nam, 2=Nữ) |
-
-### 2.2. Trình độ học vấn
-
-| Biến | Mô tả | Giá trị | Nguồn IPUMS |
-|------|-------|---------|-------------|
-| `education` | Trình độ học vấn chi tiết | "≤Tiểu học", "THCS", "THPT", "ĐH/CĐ+" | EDATTAIN |
-| `education_level` | Nhóm học vấn (cho mô hình) | "≤THPT", "ĐH/CĐ+" | EDATTAIN |
-
-**Mã gốc IPUMS:**
-- 1 = Less than primary completed → ≤Tiểu học
-- 2 = Primary completed → THCS
-- 3 = Secondary completed → THPT
-- 4 = University completed → ĐH/CĐ+
-
-### 2.3. Địa lý
-
-| Biến | Mô tả | Giá trị | Nguồn IPUMS |
-|------|-------|---------|-------------|
-| `urban_rural` | Thành thị/Nông thôn | "Đô thị", "Nông thôn" | URBAN |
-| `region` | Vùng miền | "Bắc", "Trung", "Nam" | GEO1_VN |
-
-**Mapping vùng miền từ GEO1_VN:**
-- **Miền Bắc:** Hà Nội, Hải Phòng, các tỉnh phía Bắc (704001-704025)
-- **Miền Trung:** Từ Thanh Hóa đến Lâm Đồng (704026-704044)
-- **Miền Nam:** Từ Bình Phước đến Cà Mau (704045-704063)
-
-### 2.4. Điều kiện nhà ở
-
-| Biến | Mô tả | Giá trị | Nguồn IPUMS |
-|------|-------|---------|-------------|
-| `home_ownership` | Sở hữu nhà | 0 = Không, 1 = Có | OWNERSHIP |
-| `living_area` | Diện tích nhà (m²) | Số thực | LIVEAREA |
-| `living_area_level` | Mức diện tích | "Nhỏ", "Trung bình", "Khá", "Rộng" | Quartile của LIVEAREA |
-
-**Phân nhóm diện tích (quartile):**
-- Nhỏ: ≤ Q1 (khoảng ≤40m²)
-- Trung bình: Q1 - Q2 (khoảng 40-72m²)
-- Khá: Q2 - Q3 (khoảng 72-126m²)
-- Rộng: > Q3 (> 126m²)
-
-### 2.5. Quy mô hộ gia đình
-
-| Biến | Mô tả | Giá trị | Nguồn IPUMS |
-|------|-------|---------|-------------|
-| `household_size` | Số người trong hộ | Số nguyên | Tính từ SERIAL |
-| `household_size_group` | Nhóm quy mô hộ | "1-2 người", "3-4 người", "5-6 người", ">6 người" | Phân nhóm |
-
-### 2.6. Năm điều tra
-
-| Biến | Mô tả | Giá trị | Nguồn IPUMS |
-|------|-------|---------|-------------|
-| `year` | Năm điều tra | 2009, 2019 | YEAR |
+| `Y_married` | Tinh trang hon nhan | 0 = Chua ket hon, 1 = Da ket hon | MARST |
 
 ---
 
-## 3. XỬ LÝ DỮ LIỆU
+## 2. BIEN DAU VAO (Features)
 
-### 3.1. Lọc dữ liệu
-- Chỉ giữ người trong độ tuổi 18-35
-- Loại bỏ missing values
+### 2.1. Thong tin nhan khau hoc
 
-### 3.2. One-Hot Encoding (cho mô hình ML)
-Các biến categorical được chuyển thành one-hot:
+| Bien | Mo ta | Gia tri | Nguon IPUMS |
+|------|-------|---------|-------------|
+| `age` | Tuoi | 18-35 | AGE |
+| `age_group` | Nhom tuoi | "18-24", "25-29", "30-35" | Tinh tu AGE |
+| `sex` | Gioi tinh | "Nam", "Nu" | SEX (1=Nam, 2=Nu) |
+
+### 2.2. Trinh do hoc van
+
+| Bien | Mo ta | Gia tri | Nguon IPUMS |
+|------|-------|---------|-------------|
+| `education` | Trinh do hoc van chi tiet | "<=Tieu hoc", "THCS", "THPT", "DH/CD+" | EDATTAIN |
+| `education_level` | Nhom hoc van (cho mo hinh) | "<=THPT", "DH/CD+" | EDATTAIN |
+
+**Ma goc IPUMS:**
+- 1 = Less than primary completed -> <=Tieu hoc
+- 2 = Primary completed -> THCS
+- 3 = Secondary completed -> THPT
+- 4 = University completed -> DH/CD+
+
+### 2.3. Dia ly
+
+| Bien | Mo ta | Gia tri | Nguon IPUMS |
+|------|-------|---------|-------------|
+| `urban_rural` | Thanh thi/Nong thon | "Do thi", "Nong thon" | URBAN |
+| `region` | Vung mien | "Bac", "Trung", "Nam" | GEO1_VN |
+
+**Mapping vung mien tu GEO1_VN:**
+- **Mien Bac:** Ha Noi, Hai Phong, cac tinh phia Bac (704001-704025)
+- **Mien Trung:** Tu Thanh Hoa den Lam Dong (704026-704044)
+- **Mien Nam:** Tu Binh Phuoc den Ca Mau (704045-704063)
+
+### 2.4. Dieu kien nha o
+
+| Bien | Mo ta | Gia tri | Nguon IPUMS |
+|------|-------|---------|-------------|
+| `home_ownership` | So huu nha | 0 = Khong, 1 = Co | OWNERSHIP |
+| `living_area` | Dien tich nha (m2) | So thuc | LIVEAREA |
+| `living_area_level` | Muc dien tich | "Nho", "Trung binh", "Kha", "Rong" | Quartile cua LIVEAREA |
+
+**Phan nhom dien tich (quartile):**
+- Nho: <= Q1 (khoang <=40m2)
+- Trung binh: Q1 - Q2 (khoang 40-72m2)
+- Kha: Q2 - Q3 (khoang 72-126m2)
+- Rong: > Q3 (> 126m2)
+
+### 2.5. Quy mo ho gia dinh
+
+| Bien | Mo ta | Gia tri | Nguon IPUMS |
+|------|-------|---------|-------------|
+| `household_size` | So nguoi trong ho | So nguyen | Tinh tu SERIAL |
+| `household_size_group` | Nhom quy mo ho | "1-2 nguoi", "3-4 nguoi", "5-6 nguoi", ">6 nguoi" | Phan nhom |
+
+### 2.6. Nam dieu tra
+
+| Bien | Mo ta | Gia tri | Nguon IPUMS |
+|------|-------|---------|-------------|
+| `year` | Nam dieu tra | 2009, 2019 | YEAR |
+
+---
+
+## 3. XU LY DU LIEU
+
+### 3.1. Loc du lieu
+- Chi giu nguoi trong do tuoi 18-35
+- Loai bo missing values
+
+### 3.2. One-Hot Encoding (cho mo hinh ML)
+Cac bien categorical duoc chuyen thanh one-hot:
 - `age_group_18-24`, `age_group_25-29`, `age_group_30-35`
-- `sex_Nam`, `sex_Nữ`
-- `education_level_≤THPT`, `education_level_ĐH/CĐ+`
-- `urban_rural_Đô thị`, `urban_rural_Nông thôn`
-- `region_Bắc`, `region_Trung`, `region_Nam`
-- `living_area_level_Nhỏ`, `living_area_level_Trung bình`, `living_area_level_Khá`, `living_area_level_Rộng`
-- `household_size_group_1-2 người`, `household_size_group_3-4 người`, `household_size_group_5-6 người`, `household_size_group_>6 người`
+- `sex_Nam`, `sex_Nu`
+- `education_level_<=THPT`, `education_level_DH/CD+`
+- `urban_rural_Do thi`, `urban_rural_Nong thon`
+- `region_Bac`, `region_Trung`, `region_Nam`
+- `living_area_level_Nho`, `living_area_level_Trung binh`, `living_area_level_Kha`, `living_area_level_Rong`
+- `household_size_group_1-2 nguoi`, `household_size_group_3-4 nguoi`, `household_size_group_5-6 nguoi`, `household_size_group_>6 nguoi`
 
 ---
 
-## 4. GIẢ THUYẾT NGHIÊN CỨU
+## 4. GIA THUYET NGHIEN CUU
 
-Dựa trên văn học và dữ liệu, các yếu tố ảnh hưởng đến xác suất kết hôn:
+Dua tren van hoc va du lieu, cac yeu to anh huong den xac suat ket hon:
 
-### 4.1. Yếu tố tích cực (+)
-- **Tuổi cao hơn (25-35):** Người trưởng thành có xu hướng kết hôn nhiều hơn
-- **Sở hữu nhà:** Có nhà riêng tăng khả năng kết hôn
-- **Đô thị:** Có cơ hội gặp gỡ nhiều hơn
-- **Học vấn cao:** Ổn định kinh tế hơn
-- **Hộ gia đình 3-4 người:** Có sự hỗ trợ từ gia đình
+### 4.1. Yeu to tich cuc (+)
+- **Tuoi cao hon (25-35):** Nguoi truong thanh co xu huong ket hon nhieu hon
+- **So huu nha:** Co nha rieng tang kha nang ket hon
+- **Do thi:** Co co hoi gap go nhieu hon
+- **Hoc van cao:** On dinh kinh te hon
+- **Ho gia dinh 3-4 nguoi:** Co su ho tro tu gia dinh
 
-### 4.2. Yếu tố tiêu cực (-)
-- **Tuổi trẻ (18-24):** Còn học tập, chưa ổn định
-- **Không có nhà:** Rào cản kinh tế lớn
-- **Nông thôn:** Ít cơ hội việc làm, di cư
-- **Diện tích nhà nhỏ:** Điều kiện sống khó khăn
+### 4.2. Yeu to tieu cuc (-)
+- **Tuoi tre (18-24):** Con hoc tap, chua on dinh
+- **Khong co nha:** Rao can kinh te lon
+- **Nong thon:** It co hoi viec lam, di cu
+- **Dien tich nha nho:** Dieu kien song kho khan
 
 ---
 
-## 5. CẤU TRÚC FILE
+## 5. CAU TRUC FILE
 
 ```
 data/
-├── ipumsi_data.csv          # Dữ liệu IPUMS gốc
-├── ipums_processed.csv      # Dữ liệu đã xử lý (6.1M records)
+├── ipumsi_data.csv          # Du lieu IPUMS goc
+├── ipums_processed.csv      # Du lieu da xu ly (6.1M records)
 
 models/
 ├── decision_tree_entropy_ipums.pkl
@@ -132,58 +132,58 @@ models/
 ├── naive_bayes_ipums.pkl
 ├── random_forest_ipums.pkl
 ├── logistic_regression_ipums.pkl
-├── feature_names_ipums.pkl  # Danh sách features cho prediction
+├── feature_names_ipums.pkl  # Danh sach features cho prediction
 
 src/
-├── ipums_data_processor.py  # Xử lý dữ liệu IPUMS
-├── train_marriage_model.py  # Huấn luyện mô hình
+├── ipums_data_processor.py  # Xu ly du lieu IPUMS
+├── train_marriage_model.py  # Huan luyen mo hinh
 ```
 
 ---
 
-## 6. SỬ DỤNG TRONG APP
+## 6. SU DUNG TRONG APP
 
-### Input cho dự báo cá nhân:
-1. **Tuổi:** Slider 18-35 → Tự tính age_group
-2. **Giới tính:** Selectbox (Nam/Nữ)
-3. **Vùng miền:** Selectbox (Bắc/Trung/Nam)
-4. **Khu vực:** Selectbox (Đô thị/Nông thôn)
-5. **Trình độ học vấn:** Selectbox (≤THPT/ĐH/CĐ+)
-6. **Sở hữu nhà:** Selectbox (Có/Không)
-7. **Diện tích nhà:** Slider 10-300m² → Tự tính living_area_level
-8. **Số người trong hộ:** Slider 1-12 → Tự tính household_size_group
+### Input cho du bao ca nhan:
+1. **Tuoi:** Slider 18-35 -> Tu tinh age_group
+2. **Gioi tinh:** Selectbox (Nam/Nu)
+3. **Vung mien:** Selectbox (Bac/Trung/Nam)
+4. **Khu vuc:** Selectbox (Do thi/Nong thon)
+5. **Trinh do hoc van:** Selectbox (<=THPT/DH/CD+)
+6. **So huu nha:** Selectbox (Co/Khong)
+7. **Dien tich nha:** Slider 10-300m2 -> Tu tinh living_area_level
+8. **So nguoi trong ho:** Slider 1-12 -> Tu tinh household_size_group
 
 ### Output:
-- Xác suất kết hôn (0-100%)
-- Phân loại: Cao (≥50%) / Thấp (<50%)
-- Các yếu tố ảnh hưởng chính
+- Xac suat ket hon (0-100%)
+- Phan loai: Cao (>=50%) / Thap (<50%)
+- Cac yeu to anh huong chinh
 
 ---
 
-## 7. THỐNG KÊ MÔ TẢ (Tóm tắt)
+## 7. THONG KE MO TA (Tom tat)
 
-Dựa trên dữ liệu IPUMS Vietnam Census:
+Dua tren du lieu IPUMS Vietnam Census:
 
-| Biến | Tỷ lệ kết hôn |
+| Bien | Ty le ket hon |
 |------|---------------|
-| **Theo nhóm tuổi** | |
+| **Theo nhom tuoi** | |
 | 18-24 | ~35% |
 | 25-29 | ~65% |
 | 30-35 | ~85% |
-| **Theo giới tính** | |
+| **Theo gioi tinh** | |
 | Nam | ~60% |
-| Nữ | ~68% |
-| **Theo sở hữu nhà** | |
-| Có nhà | ~68% |
-| Không có nhà | ~52% |
-| **Theo khu vực** | |
-| Đô thị | ~69% |
-| Nông thôn | ~58% |
-| **Theo vùng miền** | |
-| Miền Bắc | ~67% |
-| Miền Trung | ~60% |
-| Miền Nam | ~64% |
+| Nu | ~68% |
+| **Theo so huu nha** | |
+| Co nha | ~68% |
+| Khong co nha | ~52% |
+| **Theo khu vuc** | |
+| Do thi | ~69% |
+| Nong thon | ~58% |
+| **Theo vung mien** | |
+| Mien Bac | ~67% |
+| Mien Trung | ~60% |
+| Mien Nam | ~64% |
 
 ---
 
-*Tài liệu này mô tả chi tiết các biến được thiết kế để dự báo xác suất kết hôn của giới trẻ Việt Nam (18-35 tuổi) dựa trên dữ liệu Điều tra Dân số IPUMS.*
+*Tai lieu nay mo ta chi tiet cac bien duoc thiet ke de du bao xac suat ket hon cua gioi tre Viet Nam (18-35 tuoi) dua tren du lieu Dieu tra Dan so IPUMS.*

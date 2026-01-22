@@ -1,16 +1,16 @@
 # =============================================================================
-# XỬ LÝ DỮ LIỆU IPUMS INTERNATIONAL - VIETNAM CENSUS DATA
+# XU LY DU LIEU IPUMS INTERNATIONAL - VIETNAM CENSUS DATA
 # =============================================================================
 # File: ipums_data_processor.py
-# Mô tả: Xử lý dữ liệu điều tra dân số Việt Nam từ IPUMS International
-#        để tạo dataset dự báo TÌNH TRẠNG HÔN NHÂN (MARST)
+# Mo ta: Xu ly du lieu dieu tra dan so Viet Nam tu IPUMS International
+#        de tao dataset du bao TINH TRANG HON NHAN (MARST)
 # 
-# BIẾN MỤC TIÊU (Target Variable):
-#   - Y_married (từ MARST): Tình trạng hôn nhân
-#     + 0 = Single/never married (Chưa kết hôn)
-#     + 1 = Married/in union (Đã kết hôn)
+# BIEN MUC TIEU (Target Variable):
+#   - Y_married (tu MARST): Tinh trang hon nhan
+#     + 0 = Single/never married (Chua ket hon)
+#     + 1 = Married/in union (Da ket hon)
 #
-# Nguồn dữ liệu: IPUMS International (Minnesota Population Center)
+# Nguon du lieu: IPUMS International (Minnesota Population Center)
 #        - Vietnam 2009 Census
 #        - Vietnam 2019 Census
 # =============================================================================
@@ -20,33 +20,33 @@ import numpy as np
 from pathlib import Path
 
 # =============================================================================
-# ĐỊNH NGHĨA BIẾN - IPUMS CODEBOOK
+# DINH NGHIA BIEN - IPUMS CODEBOOK
 # =============================================================================
 
 # MARST - Marital Status
-# 0 = Single/never married (Độc thân/chưa từng kết hôn)
-# 1 = Married/in union (Đã kết hôn/sống chung)
+# 0 = Single/never married (Doc than/chua tung ket hon)
+# 1 = Married/in union (Da ket hon/song chung)
 
 # SEX - Sex
 # 1 = Male (Nam)
-# 2 = Female (Nữ)
+# 2 = Female (Nu)
 
 # EDATTAIN - Educational Attainment
-# 1 = Less than primary completed (Chưa hoàn thành tiểu học)
-# 2 = Primary completed (Tiểu học)
+# 1 = Less than primary completed (Chua hoan thanh tieu hoc)
+# 2 = Primary completed (Tieu hoc)
 # 3 = Secondary completed (THCS/THPT)
-# 4 = University completed (ĐH/CĐ trở lên)
+# 4 = University completed (DH/CD tro len)
 
 # URBAN - Urban/Rural
-# 1 = Urban (Thành thị)
-# 2 = Rural (Nông thôn)
+# 1 = Urban (Thanh thi)
+# 2 = Rural (Nong thon)
 
 # OWNERSHIP - Ownership of dwelling
-# 1 = Owned (Sở hữu)
-# 2 = Not owned (Không sở hữu)
+# 1 = Owned (So huu)
+# 2 = Not owned (Khong so huu)
 
 # GEO1_VN - Region (First administrative level)
-# 704001-704063 = Các tỉnh/thành phố Việt Nam
+# 704001-704063 = Cac tinh/thanh pho Viet Nam
 
 # =============================================================================
 # MAPPING VÙNG MIỀN - BASED ON GEO1_VN CODES
@@ -77,76 +77,76 @@ REGION_MAPPING = {
     704021: 'Bắc',  # Hưng Yên
     704022: 'Bắc',  # Thái Bình
     704023: 'Bắc',  # Hà Nam
-    704024: 'Bắc',  # Nam Định
-    704025: 'Bắc',  # Ninh Bình
+    704024: 'Bac',  # Nam Dinh
+    704025: 'Bac',  # Ninh Binh
     
-    # MIỀN TRUNG (Trung)
-    704026: 'Trung',  # Thanh Hóa
-    704027: 'Trung',  # Nghệ An
-    704028: 'Trung',  # Hà Tĩnh
-    704029: 'Trung',  # Quảng Bình
-    704030: 'Trung',  # Quảng Trị
-    704031: 'Trung',  # Thừa Thiên Huế
-    704032: 'Trung',  # Đà Nẵng
-    704033: 'Trung',  # Quảng Nam
-    704034: 'Trung',  # Quảng Ngãi
-    704035: 'Trung',  # Bình Định
-    704036: 'Trung',  # Phú Yên
-    704037: 'Trung',  # Khánh Hòa
-    704038: 'Trung',  # Ninh Thuận
-    704039: 'Trung',  # Bình Thuận
+    # MIEN TRUNG (Trung)
+    704026: 'Trung',  # Thanh Hoa
+    704027: 'Trung',  # Nghe An
+    704028: 'Trung',  # Ha Tinh
+    704029: 'Trung',  # Quang Binh
+    704030: 'Trung',  # Quang Tri
+    704031: 'Trung',  # Thua Thien Hue
+    704032: 'Trung',  # Da Nang
+    704033: 'Trung',  # Quang Nam
+    704034: 'Trung',  # Quang Ngai
+    704035: 'Trung',  # Binh Dinh
+    704036: 'Trung',  # Phu Yen
+    704037: 'Trung',  # Khanh Hoa
+    704038: 'Trung',  # Ninh Thuan
+    704039: 'Trung',  # Binh Thuan
     704040: 'Trung',  # Kon Tum
     704041: 'Trung',  # Gia Lai
-    704042: 'Trung',  # Đắk Lắk
-    704043: 'Trung',  # Đắk Nông
-    704044: 'Trung',  # Lâm Đồng
+    704042: 'Trung',  # Dak Lak
+    704043: 'Trung',  # Dak Nong
+    704044: 'Trung',  # Lam Dong
     
-    # MIỀN NAM (Nam)
-    704045: 'Nam',  # Bình Phước
-    704046: 'Nam',  # Tây Ninh
-    704047: 'Nam',  # Bình Dương
-    704048: 'Nam',  # Đồng Nai
-    704049: 'Nam',  # Bà Rịa - Vũng Tàu
-    704050: 'Nam',  # TP. Hồ Chí Minh
+    # MIEN NAM (Nam)
+    704045: 'Nam',  # Binh Phuoc
+    704046: 'Nam',  # Tay Ninh
+    704047: 'Nam',  # Binh Duong
+    704048: 'Nam',  # Dong Nai
+    704049: 'Nam',  # Ba Ria - Vung Tau
+    704050: 'Nam',  # TP. Ho Chi Minh
     704051: 'Nam',  # Long An
-    704052: 'Nam',  # Tiền Giang
-    704053: 'Nam',  # Bến Tre
-    704054: 'Nam',  # Trà Vinh
-    704055: 'Nam',  # Vĩnh Long
-    704056: 'Nam',  # Đồng Tháp
+    704052: 'Nam',  # Tien Giang
+    704053: 'Nam',  # Ben Tre
+    704054: 'Nam',  # Tra Vinh
+    704055: 'Nam',  # Vinh Long
+    704056: 'Nam',  # Dong Thap
     704057: 'Nam',  # An Giang
-    704058: 'Nam',  # Kiên Giang
-    704059: 'Nam',  # Cần Thơ
-    704060: 'Nam',  # Hậu Giang
-    704061: 'Nam',  # Sóc Trăng
-    704062: 'Nam',  # Bạc Liêu
-    704063: 'Nam',  # Cà Mau
+    704058: 'Nam',  # Kien Giang
+    704059: 'Nam',  # Can Tho
+    704060: 'Nam',  # Hau Giang
+    704061: 'Nam',  # Soc Trang
+    704062: 'Nam',  # Bac Lieu
+    704063: 'Nam',  # Ca Mau
 }
 
-# Thêm các mã mới (có thể từ census 2019)
+# Them cac ma moi (co the tu census 2019)
 for code in range(704064, 704100):
     if code not in REGION_MAPPING:
-        # Mặc định gán theo pattern
+        # Mac dinh gan theo pattern
         if code <= 704075:
             REGION_MAPPING[code] = 'Trung'
         elif code <= 704090:
             REGION_MAPPING[code] = 'Nam'
         else:
-            REGION_MAPPING[code] = 'Bắc'
+            REGION_MAPPING[code] = 'Bac'
 
 
 def load_ipums_data(file_path: str = "data/ipumsi_data.csv", 
                     sample_size: int = None,
                     age_range: tuple = (18, 35)) -> pd.DataFrame:
     """
-    Load và tiền xử lý dữ liệu IPUMS International Vietnam
+    Load va tien xu ly du lieu IPUMS International Vietnam
     
     Parameters:
     -----------
     file_path : str
-        Đường dẫn đến file CSV
+        Duong dan den file CSV
     sample_size : int, optional
-        Số dòng sample (None = load toàn bộ)
+        So dong sample (None = load toan bo)
     age_range : tuple
         Khoảng tuổi cần lọc (min, max)
         

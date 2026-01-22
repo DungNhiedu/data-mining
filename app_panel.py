@@ -1,13 +1,13 @@
 # =============================================================================
-# ĐỒ ÁN: Dự báo Tình trạng Hôn nhân của Giới trẻ (18–35), Giai đoạn 2019–2024
+# DO AN: Du bao Tinh trang Hon nhan cua Gioi tre (18-35), Giai doan 2019-2024
 # =============================================================================
 # File: app_panel.py (Streamlit App)
-# Mô tả: Ứng dụng demo dự báo kết hôn với panel data
+# Mo ta: Ung dung demo du bao ket hon voi panel data
 #
-# BIẾN MỤC TIÊU (Target Variable):
-#   - Y_married (từ MARST): Tình trạng hôn nhân
-#     + 0 = Chưa kết hôn (Single/never married)
-#     + 1 = Đã kết hôn (Married/in union)
+# BIEN MUC TIEU (Target Variable):
+#   - Y_married (tu MARST): Tinh trang hon nhan
+#     + 0 = Chua ket hon (Single/never married)
+#     + 1 = Da ket hon (Married/in union)
 #
 # UI Style: Material Kit React (Devias) - Professional Dashboard
 # =============================================================================
@@ -21,11 +21,11 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-# Load environment variables từ file .env
+# Load environment variables tu file .env
 from dotenv import load_dotenv
 load_dotenv()
 
-# Google Gemini AI - SDK mới (google-genai)
+# Google Gemini AI - SDK moi (google-genai)
 try:
     from google import genai
     GEMINI_AVAILABLE = True
@@ -794,45 +794,32 @@ def init_gemini():
 
 @st.cache_resource
 def load_models():
-    """Tải các mô hình đã huấn luyện - chỉ 3 mô hình chính"""
+    """Tai cac mo hinh da huan luyen - DAY DU 5 mo hinh, bao loi neu khong load duoc"""
     models = {}
-    
+    errors = []
     ipums_model_files = {
         "Decision Tree (Entropy)": "models/decision_tree_entropy_ipums.pkl",
         "Decision Tree (Gini)": "models/decision_tree_gini_ipums.pkl",
-        "Naive Bayes": "models/naive_bayes_ipums.pkl"
+        "Naive Bayes": "models/naive_bayes_ipums.pkl",
+        "Random Forest": "models/random_forest_ipums.pkl",
+        "Logistic Regression": "models/logistic_regression_ipums.pkl"
     }
-    
-    # Mô hình cũ (fallback)
-    old_model_files = {
-        "Decision Tree (Entropy)": "models/tree_entropy_panel.pkl",
-        "Decision Tree (Gini)": "models/tree_gini_panel.pkl",
-        "Naive Bayes": "models/naive_bayes_panel.pkl"
-    }
-    
-    # Thử load mô hình IPUMS
     for name, path in ipums_model_files.items():
         if os.path.exists(path):
             try:
                 models[name] = joblib.load(path)
             except Exception as e:
-                pass
-    
-    # Nếu không có mô hình IPUMS, thử load mô hình cũ
-    if not models:
-        for name, path in old_model_files.items():
-            if os.path.exists(path):
-                try:
-                    models[name] = joblib.load(path)
-                except Exception as e:
-                    pass
-    
+                errors.append(f"Loi load {name}: {e}")
+        else:
+            errors.append(f"Khong tim thay file mo hinh: {path}")
+    if errors:
+        st.warning("\n".join(errors))
     return models
 
 
 @st.cache_resource
 def load_feature_names():
-    """Tải danh sách feature names cho mô hình IPUMS"""
+    """Tai danh sach feature names cho mo hinh IPUMS"""
     if os.path.exists("models/feature_names_ipums.pkl"):
         return joblib.load("models/feature_names_ipums.pkl")
     return None
@@ -840,8 +827,8 @@ def load_feature_names():
 
 @st.cache_data
 def load_panel_data():
-    """Tải dữ liệu - ưu tiên IPUMS processed data"""
-    # Ưu tiên dữ liệu IPUMS đã xử lý
+    """Tai du lieu - uu tien IPUMS processed data"""
+    # Uu tien du lieu IPUMS da xu ly
     if os.path.exists("data/ipums_processed.csv"):
         return pd.read_csv("data/ipums_processed.csv")
     # Fallback sang panel_microdata cũ
@@ -852,7 +839,7 @@ def load_panel_data():
 
 @st.cache_data
 def load_macro_data():
-    """Tải dữ liệu macro"""
+    """Tai du lieu macro"""
     if os.path.exists("data/macro_region_year.csv"):
         return pd.read_csv("data/macro_region_year.csv")
     
@@ -1046,6 +1033,9 @@ DỮ LIỆU THỐNG KÊ THỰC TẾ TỪ ĐIỀU TRA DÂN SỐ VIỆT NAM (IPUMS
     return summary
 
 def main():
+    models = load_models()  # Load ONCE for sidebar and all tabs
+    panel_data = load_panel_data()
+    macro_data = load_macro_data()
     with st.sidebar:
         # Logo và Brand
         st.markdown("""
@@ -1067,8 +1057,8 @@ def main():
         </div>
         """, unsafe_allow_html=True)
         
-        # Stats mini cards
-        st.markdown("""
+        # Stats mini cards (dynamic model count)
+        st.markdown(f"""
         <div style="background: #313749; border-radius: 12px; padding: 16px; margin: 0 8px 16px 8px;">
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
                 <div style="width: 44px; height: 44px; background: rgba(99, 91, 255, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
@@ -1081,7 +1071,7 @@ def main():
             </div>
             <div style="display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
                 <div style="text-align: center;">
-                    <p style="color: #635BFF; font-weight: 700; font-size: 1.4em; margin: 0;">3</p>
+                    <p style="color: #635BFF; font-weight: 700; font-size: 1.4em; margin: 0;">{len(models)}</p>
                     <p style="color: #9fa6ad; font-size: 0.95em; margin: 0;">Mô hình</p>
                 </div>
                 <div style="text-align: center;">
@@ -1133,11 +1123,6 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
-    # Load resources
-    models = load_models()
-    panel_data = load_panel_data()
-    macro_data = load_macro_data()
-    
     # Tabs với Material Style
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "DỰ BÁO CÁ NHÂN",
@@ -1150,12 +1135,19 @@ def main():
     
     with tab1:
         render_header("Dự báo xác suất kết hôn")
-        
+        # Xoá selectbox cũ, chỉ giữ 1 selectbox mô hình duy nhất
+        model_options = list(models.keys())
+        selected_model_name = st.selectbox(
+            "Chọn mô hình dự báo",
+            model_options if model_options else ["Chưa có mô hình"],
+            index=0,
+            help="Chọn mô hình Machine Learning để dự báo",
+            key="model_select_main"
+        )
+        selected_model = models[selected_model_name] if selected_model_name in models else None
         # Load feature names
         feature_names = load_feature_names()
-        
         col1, col2 = st.columns([1, 1], gap="large")
-        
         with col1:
             st.markdown("""
             <div class="form-card">
@@ -1221,23 +1213,9 @@ def main():
                 household_size_group = ">6 người"
         
         st.markdown('<hr style="border-color: rgba(255,255,255,0.08); margin: 28px 0;">', unsafe_allow_html=True)
-        
-        # Chọn mô hình
-        st.markdown("""
-        <div style="background: var(--background-paper); border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.08);">
-            <p style="color: #9fa6ad; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 12px 0;">CHỌN MÔ HÌNH DỰ BÁO</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        model_choice = st.selectbox("Mô hình", list(models.keys()) if models else ["Chưa có mô hình"], key="model_select")
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-        
         # Nút dự báo
         if st.button("Dự báo ngay", type="primary", use_container_width=True, key="predict_btn"):
-            if models and model_choice in models:
-                model = models[model_choice]
-                
+            if selected_model is not None:
                 # Tạo DataFrame với tất cả các features đã one-hot encoded
                 input_dict = {
                     'age': age,
@@ -1255,13 +1233,12 @@ def main():
                     'education_level_ĐH/CĐ+': 1 if education == 'ĐH/CĐ+' else 0,
                     'education_level_≤THPT': 1 if education == '≤THPT' else 0,
                     # Urban/Rural one-hot
-                    'urban_rural_Đô thị': 1 if urban_rural == 'Đô thị' else 0,
                     'urban_rural_Nông thôn': 1 if urban_rural == 'Nông thôn' else 0,
+                    'urban_rural_Đô thị': 1 if urban_rural == 'Đô thị' else 0,
                     # Region one-hot
                     'region_Bắc': 1 if region == 'Bắc' else 0,
                     'region_Nam': 1 if region == 'Nam' else 0,
                     'region_Trung': 1 if region == 'Trung' else 0,
-                    'region_Khác': 0,
                     # Living area level one-hot
                     'living_area_level_Khá': 1 if living_area_level == 'Khá' else 0,
                     'living_area_level_Nhỏ': 1 if living_area_level == 'Nhỏ' else 0,
@@ -1283,10 +1260,9 @@ def main():
                         if col not in input_data.columns:
                             input_data[col] = 0
                     input_data = input_data[feature_names]
-                
                 # Dự báo
                 try:
-                    proba = model.predict_proba(input_data)[0, 1]
+                    proba = selected_model.predict_proba(input_data)[0, 1]
                     pred = "Có khả năng kết hôn cao" if proba >= 0.5 else "Khả năng kết hôn thấp"
                     
                     st.markdown('<hr style="border-color: rgba(255,255,255,0.08); margin: 28px 0;">', unsafe_allow_html=True)
@@ -1309,7 +1285,7 @@ def main():
                                 <h1 style="color: {THEME['success']}; margin: 16px 0; font-size: 3.5em; font-family: 'Plus Jakarta Sans', sans-serif;">{proba:.1%}</h1>
                                 <p style="color: #ffffff; margin: 0; font-weight: 600; font-size: 1.2em;">{pred}</p>
                                 <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(21, 183, 159, 0.3);">
-                                    <span class="badge badge-success">Mô hình: {model_choice}</span>
+                                    <span class="badge badge-success">Mô hình: {selected_model_name}</span>
                                 </div>
                             </div>
                             """, unsafe_allow_html=True)
@@ -1320,7 +1296,7 @@ def main():
                                 <h1 style="color: {THEME['error']}; margin: 16px 0; font-size: 3.5em; font-family: 'Plus Jakarta Sans', sans-serif;">{proba:.1%}</h1>
                                 <p style="color: #ffffff; margin: 0; font-weight: 600; font-size: 1.2em;">{pred}</p>
                                 <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(240, 68, 56, 0.3);">
-                                    <span class="badge badge-error">Mô hình: {model_choice}</span>
+                                    <span class="badge badge-error">Mô hình: {selected_model_name}</span>
                                 </div>
                             </div>
                             """, unsafe_allow_html=True)
@@ -1574,11 +1550,9 @@ def main():
                     from src.panel_data_generator import generate_panel_data
                     panel = generate_panel_data()
                     st.success(f"Đã tạo thành công {len(panel)} bản ghi!")
-                    
                     # Hiển thị dữ liệu vừa tạo
                     st.markdown("<br>", unsafe_allow_html=True)
                     render_header("Dữ liệu Panel vừa tạo", size="small")
-                    
                     # Thống kê tổng quan
                     col1, col2, col3, col4 = st.columns(4)
                     with col1:
@@ -1589,7 +1563,6 @@ def main():
                         st.metric("Tỷ lệ kết hôn TB", f"{panel['Y_married'].mean():.1%}")
                     with col4:
                         st.metric("Số cá nhân", f"{panel['id'].nunique():,}")
-                    
                     # Hiển thị 10 dòng đầu
                     st.markdown("<br>", unsafe_allow_html=True)
                     st.markdown(f"""
@@ -1598,7 +1571,6 @@ def main():
                     </div>
                     """, unsafe_allow_html=True)
                     st.dataframe(panel.head(10), use_container_width=True, hide_index=True)
-                    
                     st.info("Vui lòng nhấn F5 hoặc reload trang để xem đầy đủ biểu đồ phân tích.")
     
     with tab3:
@@ -1678,7 +1650,7 @@ def main():
                     <p style="color: {THEME['primary_light']}; font-family: 'Roboto Mono', monospace; font-size: 1em; margin: 0; line-height: 1.6;">{rule['condition']}</p>
                 </div>
                 <p style="color: {result_color}; font-family: 'Roboto Mono', monospace; font-weight: 600; font-size: 1.05em; margin: 12px 0;">{rule['result']}</p>
-                <div style="margin-top: 16px; padding-top:  12px; border-top: 1px solid rgba(255,255,255,0.06);">
+                <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">
                     <p style="color: {THEME['text_secondary']}; margin: 0; font-size: 1em;">{rule['insight']}</p>
                 </div>
             </div>
@@ -1686,182 +1658,264 @@ def main():
     
     with tab4:
         render_header("So sánh hiệu năng các mô hình")
-        
-        # Bảng so sánh - load từ file hoặc dùng dữ liệu mặc định
-        if os.path.exists("outputs/model_comparison_panel.csv"):
-            comparison_df = pd.read_csv("outputs/model_comparison_panel.csv")
-            # Đổi tên cột để hiển thị đẹp hơn
+        # Bảng so sánh - sử dụng kết quả từ IPUMS data
+        if os.path.exists("outputs/model_comparison_ipums.csv"):
+            comparison_df = pd.read_csv("outputs/model_comparison_ipums.csv")
             display_df = comparison_df.rename(columns={
                 "Model": "Mô hình",
-                "Train_Acc": "Train Accuracy",
-                "Val_Acc": "Val Accuracy", 
-                "Test_Acc": "Test Accuracy",
-                "Test_AUC": "Test ROC-AUC",
-                "Test_F1": "Test F1-Score"
+                "Accuracy": "Test Accuracy",
+                "Precision": "Precision", 
+                "Recall": "Recall",
+                "F1-Score": "F1-Score",
+                "ROC-AUC": "ROC-AUC"
             })
+            st.markdown(f"""
+            <div style=\"background: {THEME['surface']}; padding: 24px; border-radius: 16px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.08);\">
+                <div style=\"display: flex; align-items: center; gap: 12px; margin-bottom: 16px;\">
+                    <div>
+                        <h4 style=\"color: {THEME['text_primary']}; margin: 0; font-weight: 600; font-size: 1.2em;\">Bảng so sánh chi tiết</h4>
+                        <p style=\"color: {THEME['text_secondary']}; margin: 0; font-size: 1em;\">Metrics đánh giá các mô hình ML trên dữ liệu IPUMS</p>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            st.dataframe(
+                display_df.style.format({
+                    "Test Accuracy": "{:.2%}",
+                    "Precision": "{:.2%}",
+                    "Recall": "{:.2%}",
+                    "F1-Score": "{:.2%}",
+                    "ROC-AUC": "{:.2%}"
+                }),
+                use_container_width=True,
+                hide_index=True
+            )
         else:
-            display_df = pd.DataFrame({
-                "Mô hình": ["Decision Tree (Entropy)", "Decision Tree (Gini)", "Naive Bayes"],
-                "Train Accuracy": [0.78, 0.77, 0.72],
-                "Val Accuracy": [0.76, 0.75, 0.71],
-                "Test Accuracy": [0.75, 0.74, 0.70],
-                "Test ROC-AUC": [0.82, 0.81, 0.76],
-                "Test F1-Score": [0.68, 0.67, 0.62]
-            })
-        
-        # Hiển thị bảng với card style
-        st.markdown(f"""
-        <div style="background: {THEME['surface']}; padding: 24px; border-radius: 16px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.08);">
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                <div>
-                    <h4 style="color: {THEME['text_primary']}; margin: 0; font-weight: 600; font-size: 1.2em;">Bảng so sánh chi tiết</h4>
-                    <p style="color: {THEME['text_secondary']}; margin: 0; font-size: 1em;">Metrics đánh giá các mô hình ML</p>
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.dataframe(
-            display_df.style.format({
-                "Train Accuracy": "{:.2%}",
-                "Val Accuracy": "{:.2%}",
-                "Test Accuracy": "{:.2%}",
-                "Test ROC-AUC": "{:.2%}",
-                "Test F1-Score": "{:.2%}"
-            }),
-            use_container_width=True, 
-            hide_index=True
-        )
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        # Biểu đồ
-        render_header("Biểu đồ so sánh", size="small")
-        
-        fig = go.Figure()
-        
-        # Danh sách metrics theo tên cột đã đổi
-        metrics_display = ["Train Accuracy", "Val Accuracy", "Test Accuracy", "Test ROC-AUC", "Test F1-Score"]
-        
-        for i, row in display_df.iterrows():
-            model_name = row["Mô hình"]
-            values = [row[m] for m in metrics_display]
-            fig.add_trace(go.Bar(
-                name=model_name,
-                x=metrics_display,
-                y=values,
-                marker_color=CHART_COLORS[i % len(CHART_COLORS)],
-                marker_line_width=0,
-                marker_cornerradius=6,
-                text=[f"{v:.1%}" for v in values],
-                textposition='outside',
-                textfont=dict(color=THEME["text_primary"], size=12, family='Inter, sans-serif')
-            ))
-        
-        layout = create_material_chart_layout()
-        layout.update(
-            title="So sánh các chỉ số đánh giá",
-            barmode='group',
-            yaxis=dict(range=[0, 1.15], tickformat=".0%", gridcolor='rgba(255, 255, 255, 0.06)'),
-            height=500,
-            bargap=0.2,
-            bargroupgap=0.1
-        )
-        fig.update_layout(**layout)
-        
-        st.plotly_chart(fig, use_container_width=True)
-        
-        # Nhận xét với card style
-        st.markdown(f"""
-        <div class="insight-box">
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                <div>
-                    <p style="color: {THEME['text_primary']}; font-weight: 600; margin: 0; font-size: 1.15em;">Nhận xét & Đánh giá</p>
-                    <p style="color: {THEME['text_secondary']}; font-size: 1em; margin: 0;">Phân tích hiệu năng mô hình</p>
-                </div>
-            </div>
-            <ul style="color: {THEME['text_primary']}; line-height: 2.2; margin: 0; padding-left: 20px; font-size: 1.05em;">
-                <li><span style="color: {THEME['primary']}; font-weight: 600;">Decision Tree (Entropy)</span> cho kết quả tốt nhất với ROC-AUC ~0.82</li>
-                <li>Mô hình ổn định qua các năm validation (2023) và test (2024)</li>
-                <li><span style="color: {THEME['error']}; font-weight: 600;">Naive Bayes</span> có accuracy thấp hơn do đặc thù dữ liệu categorical</li>
-                <li>Không có hiện tượng concept drift đáng kể giữa các năm</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
+            st.error("Không tìm thấy file outputs/model_comparison_ipums.csv. Vui lòng chạy lại script huấn luyện để tạo bảng so sánh mô hình.")
     
     with tab5:
         render_header("Các yếu tố ảnh hưởng đến quyết định kết hôn")
         
-        # Tóm tắt yếu tố với card style
+        # Load feature importance từ tất cả 5 models
+        dt_entropy_importance = None
+        dt_gini_importance = None
+        rf_importance = None
+        lr_importance = None
+        
+        if os.path.exists("outputs/feature_importance_decision_tree_entropy.csv"):
+            dt_entropy_importance = pd.read_csv("outputs/feature_importance_decision_tree_entropy.csv")
+        if os.path.exists("outputs/feature_importance_decision_tree_gini.csv"):
+            dt_gini_importance = pd.read_csv("outputs/feature_importance_decision_tree_gini.csv")
+        if os.path.exists("outputs/feature_importance_random_forest.csv"):
+            rf_importance = pd.read_csv("outputs/feature_importance_random_forest.csv")
+        if os.path.exists("outputs/feature_importance_logistic_regression.csv"):
+            lr_importance = pd.read_csv("outputs/feature_importance_logistic_regression.csv")
+        
+        # Tóm tắt yếu tố với card style - dựa trên cả 5 models
         st.markdown(f"""
         <div style="background: {THEME['surface']}; border-radius: 20px; padding: 28px; margin-bottom: 28px; border: 1px solid rgba(99, 91, 255, 0.15);">
             <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px;">
                 <div>
-                    <h4 style="color: {THEME['text_primary']}; margin: 0; font-weight: 600; font-size: 1.2em;">Tổng quan các yếu tố</h4>
-                    <p style="color: {THEME['text_secondary']}; margin: 0; font-size: 1em;">Feature Importance Analysis</p>
+                    <h4 style="color: {THEME['text_primary']}; margin: 0; font-weight: 600; font-size: 1.2em;">Tổng quan các yếu tố từ 5 mô hình ML</h4>
+                    <p style="color: {THEME['text_secondary']}; margin: 0; font-size: 1em;">Decision Tree (Entropy & Gini), Naive Bayes, Random Forest, Logistic Regression</p>
                 </div>
             </div>
             <p style="color: {THEME['text_primary']}; margin: 0; line-height: 1.9; font-size: 1.05em;">
-                Dựa trên phân tích Decision Tree và Naive Bayes, các yếu tố sau ảnh hưởng 
-                mạnh nhất đến quyết định kết hôn của giới trẻ 18-35 trong giai đoạn 2019-2024:
+                Phân tích trên <b style="color: {THEME['primary']};">6,128,957 bản ghi</b> từ dữ liệu IPUMS Vietnam Census (2009 & 2019).
+                Kết hợp kết quả từ cả 5 mô hình để đưa ra đánh giá toàn diện về các yếu tố ảnh hưởng đến quyết định kết hôn.
             </p>
         </div>
         """, unsafe_allow_html=True)
         
+        # Bảng tổng hợp Feature Importance từ cả 5 models
+        render_header("Bảng tổng hợp Feature Importance từ 5 mô hình", size="small")
+        
+        # Tạo bảng tổng hợp
+        summary_data = {
+            "Yếu tố": ["Tuổi (age)", "Quy mô hộ (household_size)", "Nhóm tuổi 18-24", "Giới tính Nam", 
+                      "Khu vực sinh sống", "Sở hữu nhà", "Trình độ học vấn", "Vùng miền"],
+            "DT Entropy": ["54.4%", "25.0%", "0.08%", "6.6%", "2.6%", "1.2%", "1.8%", "1.6%"],
+            "DT Gini": ["11.7%", "18.8%", "46.9%", "6.6%", "2.4%", "1.1%", "1.7%", "1.3%"],
+            "Random Forest": ["31.0%", "18.5%", "17.6%", "3.7%", "2.6%", "0.8%", "1.3%", "1.0%"],
+            "Logistic Reg": ["0.33", "1.55", "1.37", "2.84", "4.47", "0.69", "4.47", "4.46"],
+            "Đánh giá chung": ["⭐⭐⭐⭐⭐", "⭐⭐⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐", "⭐⭐⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐"]
+        }
+        summary_df = pd.DataFrame(summary_data)
+        
+        st.dataframe(summary_df, use_container_width=True, hide_index=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Factors dựa trên dữ liệu thực từ cả 5 models
         factors = [
-            ("Nhóm tuổi (age_group)", "25-29, 30-35 tăng mạnh xác suất kết hôn", THEME["success"], "+"),
-            ("Giới tính (sex)", "Nữ có tỷ lệ kết hôn cao hơn nam trong cùng nhóm tuổi", THEME["primary"], "+"),
-            ("Sở hữu nhà (home_ownership)", "Có nhà -> tăng đáng kể khả năng kết hôn (~16%)", THEME["warning"], "+"),
-            ("Khu vực (urban_rural)", "Đô thị có tỷ lệ cao hơn nông thôn", THEME["info"], "+"),
-            ("Trình độ học vấn", "ĐH/CĐ+ có tỷ lệ kết hôn cao hơn ≤THPT", THEME["success"], "+"),
-            ("Vùng miền (region)", "Miền Bắc > Miền Nam > Miền Trung", THEME["warning"], "+/-"),
-            ("Diện tích nhà ở", "Nhà rộng -> tỷ lệ kết hôn cao hơn", THEME["success"], "+"),
-            ("Quy mô hộ gia đình", "Hộ 3-4 người có tỷ lệ kết hôn cao nhất", THEME["info"], "+")
+            ("1. Tuổi (age)", "Quan trọng NHẤT trong DT-Entropy (54.4%) và RF (31%). Tuổi càng cao → xác suất kết hôn tăng mạnh", THEME["success"], "⭐⭐⭐⭐⭐"),
+            ("2. Quy mô hộ gia đình", "Top 2 ở cả 4 models (18-25%). Hộ 1-2 người có hệ số 3.80 trong LR → sống một mình ít kết hôn", THEME["primary"], "⭐⭐⭐⭐⭐"),
+            ("3. Nhóm tuổi 18-24", "Quan trọng nhất DT-Gini (46.9%), RF (17.6%). Nhóm này có tỷ lệ kết hôn THẤP NHẤT (22%)", THEME["error"], "⭐⭐⭐⭐"),
+            ("4. Giới tính", "Nam: 3.7% (RF), 2.84 (LR). Dữ liệu: Nữ kết hôn 68% > Nam 64%", THEME["warning"], "⭐⭐⭐"),
+            ("5. Khu vực (Đô thị/Nông thôn)", "2.6% (RF). LR: Nông thôn 2.50 > Đô thị 1.97. Dữ liệu: Đô thị 69% > Nông thôn 63%", THEME["info"], "⭐⭐⭐"),
+            ("6. Trình độ học vấn", "1.3-1.8% (RF, DT). LR: ĐH/CĐ+ 2.48 > ≤THPT 1.99. Dữ liệu: ĐH/CĐ+ 67% > ≤THPT 65%", THEME["primary"], "⭐⭐⭐"),
+            ("7. Vùng miền", "1.0-1.6% (RF, DT). LR tổng ~4.5. Dữ liệu: Bắc 68% > Nam 66% > Trung 63%", THEME["warning"], "⭐⭐⭐"),
+            ("8. Sở hữu nhà", "Chỉ 0.8-1.2% (RF, DT), 0.69 (LR). THẤP HƠN KỲ VỌNG! Dữ liệu: Có nhà 67% vs Không có 65%", THEME["error"], "⭐⭐")
         ]
         
         col1, col2 = st.columns(2)
         
-        for i, (factor, desc, color, effect) in enumerate(factors):
+        for i, (factor, desc, color, stars) in enumerate(factors):
             with col1 if i % 2 == 0 else col2:
-                effect_badge = "badge-success" if effect == "+" else ("badge-error" if effect == "-" else "badge-warning")
                 st.markdown(f"""
-                <div style="background: {THEME['surface']}; border-left: 4px solid {color}; border-radius: 0 16px 16px 0; padding: 22px 24px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: all 0.2s ease;">
+                <div style="background: {THEME['surface']}; border-left: 4px solid {color}; border-radius: 0 16px 16px 0; padding: 22px 24px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <p style="color: {THEME['text_primary']}; font-weight: 600; margin: 0; font-size: 1.1em;">{factor}</p>
-                        <span class="badge {effect_badge}">{effect}</span>
+                        <span style="font-size: 1em;">{stars}</span>
                     </div>
-                    <p style="color: {THEME['text_secondary']}; margin: 0; font-size: 1em; line-height: 1.6;">{desc}</p>
+                    <p style="color: {THEME['text_secondary']}; margin: 0; font-size: 0.95em; line-height: 1.6;">{desc}</p>
                 </div>
                 """, unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Feature Importance chart
-        render_header("Mức độ quan trọng của các biến", size="small")
+        # Feature Importance charts - 4 charts cho 4 models có feature importance
+        render_header("Chi tiết Feature Importance từ từng mô hình", size="small")
         
-        importance_data = pd.DataFrame({
-            "Biến": ["age_group", "home_ownership", "urban_rural", "sex", 
-                    "education_level", "region", "living_area_level", "household_size"],
-            "Importance": [0.28, 0.22, 0.15, 0.12, 0.10, 0.08, 0.05, 0.03]
-        })
+        col1, col2 = st.columns(2)
         
-        fig = px.bar(
-            importance_data.sort_values("Importance", ascending=True),
-            x="Importance", y="Biến", orientation='h',
-            title="Feature Importance từ Decision Tree",
-            color="Importance",
-            color_continuous_scale=[
-                [0, THEME["surface_variant"]], 
-                [0.3, THEME["info"]], 
-                [0.6, THEME["primary"]], 
-                [1, THEME["success"]]
-            ]
-        )
-        layout = create_material_chart_layout()
-        layout.update(showlegend=False, height=480, coloraxis_showscale=False)
-        fig.update_layout(**layout)
-        fig.update_traces(marker_line_width=0, marker_cornerradius=8)
-        st.plotly_chart(fig, use_container_width=True)
+        with col1:
+            # Decision Tree Entropy
+            if dt_entropy_importance is not None:
+                dt_ent_top = dt_entropy_importance.head(10).copy()
+                dt_ent_top['Importance'] = dt_ent_top['Importance'] * 100
+                
+                fig_dt_ent = px.bar(
+                    dt_ent_top.sort_values("Importance", ascending=True),
+                    x="Importance", y="Feature", orientation='h',
+                    title="Decision Tree (Entropy) - Top 10 Features (%)",
+                    color="Importance",
+                    color_continuous_scale=[[0, THEME["surface_variant"]], [0.5, THEME["info"]], [1, THEME["success"]]]
+                )
+                layout = create_material_chart_layout()
+                layout.update(showlegend=False, height=400, coloraxis_showscale=False)
+                fig_dt_ent.update_layout(**layout)
+                fig_dt_ent.update_traces(marker_line_width=0, marker_cornerradius=6)
+                st.plotly_chart(fig_dt_ent, use_container_width=True)
+        
+        with col2:
+            # Decision Tree Gini
+            if dt_gini_importance is not None:
+                dt_gini_top = dt_gini_importance.head(10).copy()
+                dt_gini_top['Importance'] = dt_gini_top['Importance'] * 100
+                
+                fig_dt_gini = px.bar(
+                    dt_gini_top.sort_values("Importance", ascending=True),
+                    x="Importance", y="Feature", orientation='h',
+                    title="Decision Tree (Gini) - Top 10 Features (%)",
+                    color="Importance",
+                    color_continuous_scale=[[0, THEME["surface_variant"]], [0.5, THEME["warning"]], [1, THEME["error"]]]
+                )
+                layout = create_material_chart_layout()
+                layout.update(showlegend=False, height=400, coloraxis_showscale=False)
+                fig_dt_gini.update_layout(**layout)
+                fig_dt_gini.update_traces(marker_line_width=0, marker_cornerradius=6)
+                st.plotly_chart(fig_dt_gini, use_container_width=True)
+        
+        col3, col4 = st.columns(2)
+        
+        with col3:
+            # Random Forest
+            if rf_importance is not None:
+                rf_top = rf_importance.head(10).copy()
+                rf_top['Importance'] = rf_top['Importance'] * 100
+                
+                fig_rf = px.bar(
+                    rf_top.sort_values("Importance", ascending=True),
+                    x="Importance", y="Feature", orientation='h',
+                    title="Random Forest - Top 10 Features (%)",
+                    color="Importance",
+                    color_continuous_scale=[[0, THEME["surface_variant"]], [0.5, THEME["primary"]], [1, THEME["success"]]]
+                )
+                layout = create_material_chart_layout()
+                layout.update(showlegend=False, height=400, coloraxis_showscale=False)
+                fig_rf.update_layout(**layout)
+                fig_rf.update_traces(marker_line_width=0, marker_cornerradius=6)
+                st.plotly_chart(fig_rf, use_container_width=True)
+        
+        with col4:
+            # Logistic Regression
+            if lr_importance is not None:
+                lr_top = lr_importance.head(10).copy()
+                
+                fig_lr = px.bar(
+                    lr_top.sort_values("Importance", ascending=True),
+                    x="Importance", y="Feature", orientation='h',
+                    title="Logistic Regression - Top 10 Coefficients",
+                    color="Importance",
+                    color_continuous_scale=[[0, THEME["surface_variant"]], [0.5, THEME["info"]], [1, THEME["primary"]]]
+                )
+                layout = create_material_chart_layout()
+                layout.update(showlegend=False, height=400, coloraxis_showscale=False)
+                fig_lr.update_layout(**layout)
+                fig_lr.update_traces(marker_line_width=0, marker_cornerradius=6)
+                st.plotly_chart(fig_lr, use_container_width=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Thống kê từ dữ liệu thực tế
+        render_header("Tỷ lệ kết hôn thực tế từ dữ liệu IPUMS", size="small")
+        
+        if panel_data is not None:
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                # Theo nhóm tuổi
+                age_stats = panel_data.groupby("age_group")["Y_married"].mean().reset_index()
+                fig_age = px.bar(age_stats, x="age_group", y="Y_married",
+                               title="Tỷ lệ kết hôn theo Nhóm tuổi",
+                               color="age_group",
+                               color_discrete_sequence=[THEME["error"], THEME["warning"], THEME["success"]])
+                fig_age.update_layout(**create_material_chart_layout(), showlegend=False, height=350)
+                fig_age.update_traces(marker_cornerradius=6)
+                st.plotly_chart(fig_age, use_container_width=True)
+            
+            with col2:
+                # Theo giới tính
+                if "sex" in panel_data.columns:
+                    sex_stats = panel_data.groupby("sex")["Y_married"].mean().reset_index()
+                    fig_sex = px.bar(sex_stats, x="sex", y="Y_married",
+                                   title="Tỷ lệ kết hôn theo Giới tính",
+                                   color="sex",
+                                   color_discrete_sequence=[THEME["info"], THEME["error"]])
+                    fig_sex.update_layout(**create_material_chart_layout(), showlegend=False, height=350)
+                    fig_sex.update_traces(marker_cornerradius=6)
+                    st.plotly_chart(fig_sex, use_container_width=True)
+            
+            with col3:
+                # Theo khu vực
+                urban_stats = panel_data.groupby("urban_rural")["Y_married"].mean().reset_index()
+                fig_urban = px.bar(urban_stats, x="urban_rural", y="Y_married",
+                                 title="Tỷ lệ kết hôn theo Khu vực",
+                                 color="urban_rural",
+                                 color_discrete_sequence=[THEME["primary"], THEME["warning"]])
+                fig_urban.update_layout(**create_material_chart_layout(), showlegend=False, height=350)
+                fig_urban.update_traces(marker_cornerradius=6)
+                st.plotly_chart(fig_urban, use_container_width=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Insight box - So sánh giữa các models
+        st.markdown(f"""
+        <div class="info-box">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+                <p style="color: {THEME['text_primary']}; font-weight: 700; margin: 0; font-size: 1.15em;">KẾT LUẬN TỪ 5 MÔ HÌNH</p>
+            </div>
+            <ul style="color: {THEME['text_primary']}; line-height: 2.2; margin: 0; padding-left: 20px; font-size: 1.05em;">
+                <li><b style="color: {THEME['success']};">Decision Tree (Entropy):</b> Đặt trọng số cao nhất cho <b>age</b> (54.4%) - tuổi là yếu tố quyết định</li>
+                <li><b style="color: {THEME['warning']};">Decision Tree (Gini):</b> Đánh giá <b>age_group_18-24</b> quan trọng nhất (46.9%) - nhóm tuổi trẻ ít kết hôn</li>
+                <li><b style="color: {THEME['primary']};">Random Forest:</b> Cân bằng giữa <b>age</b> (31%), <b>household_size</b> (18.5%), <b>age_group_18-24</b> (17.6%)</li>
+                <li><b style="color: {THEME['info']};">Logistic Regression:</b> Đánh giá cao các biến categorical như <b>household_size_group</b> (6.96), <b>urban_rural</b> (4.47)</li>
+                <li><b style="color: {THEME['error']};">Naive Bayes:</b> Giả định độc lập giữa các biến, phù hợp với dữ liệu có phân phối Gaussian</li>
+                <li><b style="color: {THEME['text_secondary']};">ĐIỂM CHUNG:</b> Tất cả models đều cho thấy <b>TUỔI</b> và <b>QUY MÔ HỘ GIA ĐÌNH</b> là 2 yếu tố quan trọng nhất</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
         
@@ -2173,6 +2227,11 @@ def _display_reference_data(panel_data):
                      color="age_group",
                      color_discrete_sequence=[THEME["info"], THEME["primary"], THEME["success"]])
         fig3.update_layout(**create_material_chart_layout(), height=300, showlegend=False)
+        fig3 = px.bar(age_stats, x="age_group", y="Y_married",
+                     title="Tỷ lệ kết hôn theo nhóm tuổi",
+                     color="age_group",
+                     color_discrete_sequence=[THEME["info"], THEME["primary"], THEME["success"]])
+        fig3.update_layout(**create_material_chart_layout(), height=300, showlegend=False)
         st.plotly_chart(fig3, use_container_width=True)
     
     st.markdown("---")
@@ -2195,7 +2254,7 @@ def _display_reference_data(panel_data):
             st.caption("IPUMS International")
         with c2:
             st.warning("**Mô hình ML**")
-            st.caption("Decision Tree & Naive Bayes")
+            st.caption("Decision Tree, Naive Bayes, Random Forest và Logistic Regression")
         with c3:
             st.info("**UI Design**")
             st.caption("Material Kit React (Devias)")
